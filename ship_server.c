@@ -23,19 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define swapendian(x) ( ( x & 0xFF ) << 8 ) + ( x >> 8 )
 #define FLOAT_PRECISION 0.00001
 
-// To do:
+// To do: 即将要做的
 //
-// Firewall for Team
+// Firewall for Team 队伍屏蔽
 //
-// Challenge
+// Challenge 挑战模式
 //
-// Allow quests to be reloaded while people are in them... somehow!
+// Allow quests to be reloaded while people are in them... somehow! 激活任务状态重载
 
-#define SERVER_VERSION "0.147"
+#define SERVER_VERSION "0.148"
 #define USEADDR_ANY
 #define TCP_BUFFER_SIZE 64000
 #define PACKET_BUFFER_SIZE ( TCP_BUFFER_SIZE * 16 )
-//#define LOG_60
+
+//#define LOG_60 日志
+
 #define SHIP_COMPILED_MAX_CONNECTIONS 900
 #define SHIP_COMPILED_MAX_GAMES 75
 #define LOGIN_RECONNECT_SECONDS 15
@@ -50,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RECEIVE_PACKET_93 0x0A
 #define MAX_SENDCHECK 0x0B
 
-// Our Character Classes
+// Our Character Classes 角色职业
 
 #define CLASS_HUMAR 0x00
 #define CLASS_HUNEWEARL 0x01
@@ -66,10 +68,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CLASS_RAMARL 0x0B
 #define CLASS_MAX 0x0C
 
-// Class equip_flags
+// Class equip_flags 装备分类
 
-#define HUNTER_FLAG	1   // Bit 1
-#define RANGER_FLAG	2   // Bit 2
+#define HUNTER_FLAG	1   // Bit 1 人类
+#define RANGER_FLAG	2   // Bit 2 
 #define FORCE_FLAG	4   // Bit 3
 #define HUMAN_FLAG	8   // Bit 4
 #define	DROID_FLAG	16  // Bit 5
@@ -77,59 +79,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define	MALE_FLAG	64  // Bit 7
 #define	FEMALE_FLAG	128 // Bit 8
 
-#include	<windows.h>
-#include	<stdio.h>
-#include	<string.h>
-#include	<time.h>
-#include	<math.h>
-#include    <tchar.h>
+#include <windows.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include <tchar.h>
 
-#include	"resource.h"
-#include	"pso_crypt.h"
-#include	"bbtable.h"
-#include	"localgms.h"
-#include	"prs.cpp"
-#include	"def_map.h" // Map file name definitions
-#include	"def_block.h" // Blocked packet definitions
-#include	"def_packets.h" // Pre-made packet definitions
-#include	"def_structs.h" // Various structure definitions
-#include	"def_tables.h" // Various pre-made table definitions
+#include "resource.h"
+#include "pso_crypt.h"
+#include "bbtable.h"
+#include "localgms.h"
+#include "prs.cpp"
+#include "def_map.h" // Map file name definitions 地图文件
+#include "def_block.h" // Blocked packet definitions 舰仓数据
+#include "def_packets.h" // Pre-made packet definitions 预加载数据
+#include "def_structs.h" // Various structure definitions 各种结构定义
+#include "def_tables.h" // Various pre-made table definitions 各种预制表定义
 
-const unsigned char Message03[] = { "Tethealla 舰船服务器 v.147" };
+const unsigned char Message03[] = { "Tethealla 舰船服务器 v.148" };
 
-/* function defintions */
+/* function defintions 功能定义 */
+#include "def_functions.h"
 
-extern void	mt_bestseed(void);
-extern void	mt_seed(void);	/* Choose seed from random input. */
-extern unsigned long	mt_lrand(void);	/* Generate 32-bit random value */
-
-char* Unicode_to_ASCII(unsigned short* ucs);
-void WriteLog(char *fmt, ...);
-void WriteGM(char *fmt, ...);
-void ShipSend04(unsigned char command, BANANA* client, ORANGE* ship);
-void ShipSend0E(ORANGE* ship);
-void Send01(const wchar_t *text, BANANA* client, int line);
-void ShowArrows(BANANA* client, int to_all);
-unsigned char* MakePacketEA15(BANANA* client);
-void SendToLobby(LOBBY* l, unsigned max_send, unsigned char* src, unsigned short size, unsigned nosend);
-void removeClientFromLobby(BANANA* client);
-
-void debug(char *fmt, ...);
-void debug_perror(char * msg);
-void tcp_listen(int sockfd);
-int tcp_accept(int sockfd, struct sockaddr *client_addr, int *addr_len);
-int tcp_sock_connect(char* dest_addr, int port);
-int tcp_sock_open(struct in_addr ip, int port);
-
-void encryptcopy(BANANA* client, const unsigned char* src, unsigned size);
-void decryptcopy(unsigned char* dest, const unsigned char* src, unsigned size);
-
-void prepare_key(unsigned char *keydata, unsigned len, struct rc4_key *key);
-void compressShipPacket(ORANGE* ship, unsigned char* src, unsigned long src_size);
-void decompressShipPacket(ORANGE* ship, unsigned char* dest, unsigned char* src);
-int qflag(unsigned char* flag_data, unsigned flag, unsigned difficulty);
-
-/* variables */
+/* variables 变量*/
 
 struct timeval select_timeout = {
 	0,
@@ -138,7 +111,7 @@ struct timeval select_timeout = {
 
 FILE* debugfile;
 
-// Random drop rates
+// Random drop rates 随机掉落几率
 
 unsigned WEAPON_DROP_RATE,
 ARMOR_DROP_RATE,
@@ -148,7 +121,7 @@ MESETA_DROP_RATE,
 EXPERIENCE_RATE;
 unsigned common_rates[5] = { 0 };
 
-// Rare monster appearance rates
+// Rare monster appearance rates 稀有怪物出现几率
 
 unsigned	hildebear_rate,
 rappy_rate,
@@ -167,10 +140,10 @@ unsigned char PacketA0Data[0x4000] = { 0 };
 unsigned char Packet07Data[0x4000] = { 0 };
 unsigned short Packet07Size = 0;
 unsigned char PacketData[TCP_BUFFER_SIZE];
-unsigned char PacketData2[TCP_BUFFER_SIZE]; // Sometimes we need two...
+unsigned char PacketData2[TCP_BUFFER_SIZE]; // Sometimes we need two... 就是需要俩
 unsigned char tmprcv[PACKET_BUFFER_SIZE];
 
-/* Populated by load_config_file(): */
+/* Populated by load_config_file(): 标识配置文件参数*/
 
 unsigned char serverIP[4] = { 0 };
 int autoIP = 0;
@@ -190,17 +163,17 @@ unsigned normalName = 0xFFFFFFFF;
 unsigned globalName = 0xFF1D94F7;
 unsigned localName = 0xFFB0C4DE;
 
-unsigned short ship_banmasks[5000][4] = { 0 }; // IP address ban masks
+unsigned short ship_banmasks[5000][4] = { 0 }; // IP address ban masks IP地址封禁掩码
 BANDATA ship_bandata[5000];
 unsigned num_masks = 0;
 unsigned num_bans = 0;
 
-/* Common tables */
+/* Common tables 常用数据表 */
 
 PTDATA pt_tables_ep1[10][4];
 PTDATA pt_tables_ep2[10][4];
 
-// Episode I parsed PT data
+// Episode I parsed PT data 章节 1 数据解析
 
 unsigned short weapon_drops_ep1[10][4][10][4096];
 unsigned char slots_ep1[10][4][4096];
@@ -210,7 +183,7 @@ unsigned char power_patterns_ep1[10][4][4][4096];
 char percent_patterns_ep1[10][4][6][4096];
 unsigned char attachment_ep1[10][4][10][4096];
 
-// Episode II parsed PT data
+// Episode II parsed PT data 章节 2 数据解析
 
 unsigned short weapon_drops_ep2[10][4][10][4096];
 unsigned char slots_ep2[10][4][4096];
@@ -221,7 +194,7 @@ char percent_patterns_ep2[10][4][6][4096];
 unsigned char attachment_ep2[10][4][10][4096];
 
 
-/* Rare tables */
+/* Rare tables 稀有类型数据表*/
 
 unsigned rt_tables_ep1[0x200 * 10 * 4] = { 0 };
 unsigned rt_tables_ep2[0x200 * 10 * 4] = { 0 };
@@ -475,304 +448,7 @@ unsigned char hexToByte(char* hs)
 	return (unsigned char)b;
 }
 
-void load_mask_file()
-{
-	char mask_data[255];
-	unsigned ch = 0;
-
-	FILE* fp;
-
-	// Load masks.txt for IP ban masks
-
-	num_masks = 0;
-
-	if ((fp = fopen("masks.txt", "r")))
-	{
-		while (fgets(&mask_data[0], 255, fp) != NULL)
-		{
-			if (mask_data[0] != 0x23)
-			{
-				ch = strlen(&mask_data[0]);
-				if (mask_data[ch - 1] == 0x0A)
-					mask_data[ch--] = 0x00;
-				mask_data[ch] = 0;
-			}
-			convertMask(&mask_data[0], ch + 1, &ship_banmasks[num_masks++][0]);
-		}
-	}
-}
-
-void load_language_file()
-{
-	FILE* fp;
-	FILE* fp_messages;
-	char lang_data[256];
-	wchar_t message_data[256];
-	int langExt = 0;
-	unsigned ch;
-	unsigned cha;
-	unsigned chb;
-
-	for (ch = 0;ch<10;ch++)
-	{
-		languageNames[ch] = malloc(256);
-		memset(languageNames[ch], 0, 256);
-		languageExts[ch] = malloc(256);
-		memset(languageExts[ch], 0, 256);
-		for (cha = 0;cha < 256;cha++)
-		{
-			languageMessages[ch][cha] = malloc(256);
-			memset(languageMessages[ch][cha], 0, 256);
-		}
-	}
-
-	if ((fp = fopen("lang.ini", "r")) == NULL)
-	{
-		printf("语言文件不存在...\n将只使用中文...\n\n");
-		numLanguages = 1;
-		strcat(languageNames[0], "Chinese");
-	}
-	else
-	{
-		while ((fgets(&lang_data[0], 255, fp) != NULL) && (numLanguages < 10))
-		{
-			if (!langExt)
-			{
-				memcpy(languageNames[numLanguages], &lang_data[0], strlen(&lang_data[0]) + 1);
-				for (ch = 0;ch<strlen(languageNames[numLanguages]);ch++)
-					if ((languageNames[numLanguages][ch] == 10) || (languageNames[numLanguages][ch] == 13))
-						languageNames[numLanguages][ch] = 0;
-				langExt = 1;
-			}
-			else
-			{
-				memcpy(languageExts[numLanguages], &lang_data[0], strlen(&lang_data[0]) + 1);
-				for (ch = 0;ch<strlen(languageExts[numLanguages]);ch++)
-					if ((languageExts[numLanguages][ch] == 10) || (languageExts[numLanguages][ch] == 13))
-						languageExts[numLanguages][ch] = 0;
-				numLanguages++;
-				printf("语言文件 %u (%s:%s)\n", numLanguages, languageNames[numLanguages - 1], languageExts[numLanguages - 1]);
-				langExt = 0;
-
-				//custom lang messages
-				char messageDir[256] = "";
-				if (strlen(languageExts[numLanguages - 1])) {
-					strcat(messageDir, "messages/messages_");
-					strcat(messageDir, languageExts[numLanguages - 1]);
-					strcat(messageDir, ".ini");
-				}
-				else {
-					strcat(messageDir, "messages/messages.ini");
-				}
-				if ((fp_messages = fopen(messageDir, "r,ccs=UTF-8")) == NULL)
-				{
-					printf("%s 自定义信息文件 (%s) 不存在...\n将使用中文 (默认) 信息显示...\n\n", languageNames[numLanguages - 1], messageDir);
-				}
-				else
-				{
-					int count = 0;
-					while ((fgetws(&message_data[0], 255, fp_messages) != NULL))
-					{
-						memcpy(languageMessages[numLanguages - 1][count], &message_data[0], wstrlen(&message_data[0]) + 1);
-						if ((languageMessages[numLanguages - 1][count][wcslen(languageMessages[numLanguages - 1][count]) - 1] == 10) || (languageMessages[numLanguages - 1][count][wcslen(languageMessages[numLanguages - 1][count]) - 1] == 13))
-							languageMessages[numLanguages - 1][count][wcslen(languageMessages[numLanguages - 1][count]) - 1] = 0;
-
-						for (chb = 0;chb<wcslen(languageMessages[numLanguages - 1][count]);chb++)
-							if ((languageMessages[numLanguages - 1][count][chb - 1] == 92) && (languageMessages[numLanguages - 1][count][chb] == 110))
-							{
-								languageMessages[numLanguages - 1][count][chb - 1] = 32;
-								languageMessages[numLanguages - 1][count][chb] = 10;
-							}
-						count++;
-					}
-
-					fclose(fp_messages);
-				}
-			}
-		}
-		fclose(fp);
-		if (numLanguages < 1)
-		{
-			numLanguages = 1;
-			strcat(languageNames[0], "Chinese");
-		}
-	}
-}
-
-void load_config_file()
-{
-	int config_index = 0;
-	char config_data[255];
-	unsigned ch = 0;
-
-	FILE* fp;
-
-	EXPERIENCE_RATE = 1; // Default to 100% EXP
-
-	if ((fp = fopen("ship.ini", "r")) == NULL)
-	{
-		printf("舰船设置文件 ship.ini 缺失了.\n");
-		printf("按下 [回车键] 退出");
-		gets_s(&dp[0], 0);
-		exit(1);
-	}
-	else
-		while (fgets(&config_data[0], 255, fp) != NULL)
-		{
-			if (config_data[0] != 0x23)
-			{
-				if ((config_index == 0x00) || (config_index == 0x04) || (config_index == 0x05))
-				{
-					ch = strlen(&config_data[0]);
-					if (config_data[ch - 1] == 0x0A)
-						config_data[ch--] = 0x00;
-					config_data[ch] = 0;
-				}
-				switch (config_index)
-				{
-				case 0x00:
-					// Server IP address
-				{
-					if ((config_data[0] == 0x41) || (config_data[0] == 0x61))
-					{
-						autoIP = 1;
-					}
-					else
-					{
-						convertIPString(&config_data[0], ch + 1, 1, &serverIP[0]);
-					}
-				}
-				break;
-				case 0x01:
-					// Server Listen Port
-					serverPort = atoi(&config_data[0]);
-					break;
-				case 0x02:
-					// Number of blocks
-					serverBlocks = atoi(&config_data[0]);
-					if (serverBlocks > 10)
-					{
-						printf("你不能托管超过10个船舱... 已自动调整.\n");
-						serverBlocks = 10;
-					}
-					if (serverBlocks == 0)
-					{
-						printf("必须至少托管1个舰仓... 已自动调整.\n");
-						serverBlocks = 1;
-					}
-					break;
-				case 0x03:
-					// Max Client Connections
-					serverMaxConnections = atoi(&config_data[0]);
-					if (serverMaxConnections > (serverBlocks * 180))
-					{
-						printf("\n您尝试的连接数超过了舰船服务器所允许的数量.\n已自动调整为180...\n");
-						serverMaxConnections = serverBlocks * 180;
-					}
-					if (serverMaxConnections > SHIP_COMPILED_MAX_CONNECTIONS)
-					{
-						printf("此版本的船舶服务软件尚未编译为接受\n超过%u个连接.\n已自动调整...\n", SHIP_COMPILED_MAX_CONNECTIONS);
-						serverMaxConnections = SHIP_COMPILED_MAX_CONNECTIONS;
-					}
-					break;
-				case 0x04:
-					// Login server host name or IP
-				{
-					unsigned p;
-					unsigned alpha;
-					alpha = 0;
-					for (p = 0;p<ch;p++)
-						if (((config_data[p] >= 65) && (config_data[p] <= 90)) ||
-							((config_data[p] >= 97) && (config_data[p] <= 122)))
-						{
-							alpha = 1;
-							break;
-						}
-					if (alpha)
-					{
-						struct hostent *IP_host;
-						//这里域名竟然-1,待解决
-						config_data[strlen(&config_data[0]) - 1] = 0x00;
-						printf("解析中 %s ...\n", (char*)&config_data[0]);
-						IP_host = gethostbyname(&config_data[0]);
-						if (!IP_host)
-						{
-							printf("无法解析该域名.");
-							printf("按下 [回车键] 退出");
-							gets_s(&dp[0], 0);
-							exit(1);
-						}
-						*(unsigned *)&loginIP[0] = *(unsigned *)IP_host->h_addr;
-					}
-					else
-						convertIPString(&config_data[0], ch + 1, 1, &loginIP[0]);
-				}
-				break;
-				case 0x05:
-					// Ship Name
-					memset(&Ship_Name[0], 0, 255);
-					memcpy(&Ship_Name[0], &config_data[0], ch + 1);
-					Ship_Name[12] = 0x00;
-					break;
-				case 0x06:
-					// Event
-					shipEvent = (unsigned char)atoi(&config_data[0]);
-					PacketDA[0x04] = shipEvent;
-					break;
-				case 0x07:
-					WEAPON_DROP_RATE = atoi(&config_data[0]);
-					break;
-				case 0x08:
-					ARMOR_DROP_RATE = atoi(&config_data[0]);
-					break;
-				case 0x09:
-					MAG_DROP_RATE = atoi(&config_data[0]);
-					break;
-				case 0x0A:
-					TOOL_DROP_RATE = atoi(&config_data[0]);
-					break;
-				case 0x0B:
-					MESETA_DROP_RATE = atoi(&config_data[0]);
-					break;
-				case 0x0C:
-					EXPERIENCE_RATE = atoi(&config_data[0]);
-					if (EXPERIENCE_RATE > 99)
-					{
-						printf("\n警告: 你的经验倍率设置非常高.\n");
-						printf("关于舰船服务器 版本0.038, 你现在只用个位数\n");
-						printf("表示100%%增量. 例如.1或2\n");
-						printf("如果您故意设置了 %u%% 经验的超高指,\n", EXPERIENCE_RATE * 100);
-						printf("按下 [回车键] 继续, 或者按下 CTRL+C 终止程序.\n");
-						printf(":");
-						gets_s(&dp[0], 0);
-						printf("\n\n");
-					}
-					break;
-				case 0x0D:
-					ship_support_extnpc = atoi(&config_data[0]);
-					break;
-				default:
-					break;
-				}
-				config_index++;
-			}
-		}
-	fclose(fp);
-
-	if (config_index < 0x0D)
-	{
-		printf("ship.ini 文件貌似已损坏.\n");
-		printf("按下 [回车键] 退出");
-		gets_s(&dp[0], 0);
-		exit(1);
-	}
-	common_rates[0] = 100000 / WEAPON_DROP_RATE;
-	common_rates[1] = 100000 / ARMOR_DROP_RATE;
-	common_rates[2] = 100000 / MAG_DROP_RATE;
-	common_rates[3] = 100000 / TOOL_DROP_RATE;
-	common_rates[4] = 100000 / MESETA_DROP_RATE;
-	load_mask_file();
-}
+#include "funcs_files.h";
 
 ORANGE logon_structure;
 BANANA * connections[SHIP_COMPILED_MAX_CONNECTIONS];
@@ -1137,7 +813,7 @@ void SendToLobby(LOBBY* l, unsigned max_send, unsigned char* src, unsigned short
 	}
 }
 
-
+//缺少房间类型判断
 void removeClientFromLobby(BANANA* client)
 {
 	unsigned ch, maxch, lowestID;
@@ -1206,7 +882,7 @@ void removeClientFromLobby(BANANA* client)
 	client->lobby = 0;
 }
 
-
+//无法识别中文
 void Send1A(const wchar_t *mes, BANANA* client, int line)
 {
 	if (line>-1 && strlen(languageMessages[client->character.lang][line]))
@@ -1241,7 +917,7 @@ void Send1D(BANANA* client)
 
 	if ((((unsigned)servertime - client->savetime) / 60L) >= 5)
 	{
-		// Backup character data every 5 minutes.
+		// Backup character data every 5 minutes.每5分钟备份一次角色数据至数据库
 		client->savetime = (unsigned)servertime;
 		ShipSend04(0x02, client, logon);
 	}
@@ -1250,7 +926,7 @@ void Send1D(BANANA* client)
 	if (num_minutes)
 	{
 		if (num_minutes > 2)
-			initialize_connection(client); // If the client hasn't responded in over two minutes, drop the connection.
+			initialize_connection(client); // If the client hasn't responded in over two minutes, drop the connection.如果客户端没有回应,则断开连接
 		else
 		{
 			cipher_ptr = &client->server_cipher;
@@ -1280,6 +956,7 @@ unsigned free_game(BANANA* client)
 	return 0;
 }
 
+//配置稀有怪物的出现概率
 void ParseMapData(LOBBY* l, MAP_MONSTER* mapData, int aMob, unsigned num_records)
 {
 	MAP_MONSTER* mm;
@@ -2084,7 +1761,7 @@ void ParseMapData(LOBBY* l, MAP_MONSTER* mapData, int aMob, unsigned num_records
 	}
 }
 
-
+//对象数据有缺失
 void LoadObjectData(LOBBY* l, int unused, const char* filename)
 {
 	FILE* fp;
@@ -2554,9 +2231,9 @@ void Send64(BANANA* client)
 	{
 		if (!l->slot_use[ch])
 		{
-			l->slot_use[ch] = 1; // Slot now in use
+			l->slot_use[ch] = 1; // Slot now in use目前使用的角色槽位
 			l->client[ch] = client;
-			// lobbyNum should be set before joining the game
+			// lobbyNum should be set before joining the game房间号码应该在加入游戏前产生
 			client->clientID = ch;
 			l->gamePlayerCount++;
 			l->gamePlayerID[ch] = l->gamePlayerCount;
@@ -2599,17 +2276,17 @@ void Send64(BANANA* client)
 				PacketData2[0x04] = 0x01;
 				PacketData2[0x08] = client->clientID;
 				PacketData2[0x09] = l->leader;
-				PacketData2[0x0A] = 0x01; // ??
-				PacketData2[0x0B] = 0xFF; // ??
-				PacketData2[0x0C] = 0x01; // ??
-				PacketData2[0x0E] = 0x01; // ??
+				PacketData2[0x0A] = 0x01; // ?? 未知
+				PacketData2[0x0B] = 0xFF; // ?? 未知
+				PacketData2[0x0C] = 0x01; // ?? 未知
+				PacketData2[0x0E] = 0x01; // ?? 未知
 				PacketData2[0x16] = 0x01;
 				*(unsigned *)&PacketData2[0x18] = client->guildcard;
 				PacketData2[0x30] = client->clientID;
 				memcpy(&PacketData2[0x34], &client->character.name[0], 24);
-				PacketData2[0x54] = 0x02; // ??
+				PacketData2[0x54] = 0x02; // ?? 未知
 				memcpy(&PacketData2[0x58], &client->character.inventoryUse, 0x4DC);
-				// Prevent crashing with NPC skins...
+				// Prevent crashing with NPC skins... 防止NPC皮肤崩溃 ,貌似没有成功,会导致玩家人物短暂丢失
 				if (client->character.skinFlag)
 					memset(&PacketData2[0x58 + 0x3A8], 0, 10);
 				SendToLobby(client->lobby, 4, &PacketData2[0x00], 1332, client->guildcard);
@@ -2624,7 +2301,7 @@ void Send64(BANANA* client)
 	if (l->lobbyCount < 2)
 		PacketData[0x10C] = 0x02;
 
-	// Most of the 0x64 packet has been generated... now for the important stuff. =p
+	// Most of the 0x64 packet has been generated... now for the important stuff. =p 大多数的0x64数据包已经生成,目前很重要需要解决
 	// Leader ID @ 0x199
 	// Difficulty @ 0x19B
 	// Event @ 0x19D
@@ -2856,7 +2533,7 @@ void SendA2(unsigned char episode, unsigned char solo, unsigned char category, u
 	else
 		if (l->challenge)
 		{
-			//缺失代码,尝试使用相近代码载入
+			//缺失 Sancaros代码,尝试使用相近代码载入
 			qm = &quest_menus[10];
 			qc = 11;
 		}
@@ -3731,7 +3408,7 @@ unsigned AddItemToClient(unsigned itemid, BANANA* client)
 	unsigned item_added = 0;
 	LOBBY* l;
 
-	// Adds an item to the client's character data, but only if the item exists in the game item data
+	// Adds an item to the client's character data, but only if the item exists in the game item data 将物品添加到客户端的字符数据中,但前提是该项存在于游戏物品数据中时 
 	// to begin with.
 
 	if (!client->lobby)
@@ -3741,12 +3418,12 @@ unsigned AddItemToClient(unsigned itemid, BANANA* client)
 
 	for (ch = 0;ch<l->gameItemCount;ch++)
 	{
-		itemNum = l->gameItemList[ch]; // Lookup table for faster searching...
+		itemNum = l->gameItemList[ch]; // Lookup table for faster searching...快速查找索引表
 		if (l->gameItem[itemNum].item.itemid == itemid)
 		{
 			if (l->gameItem[itemNum].item.data[0] == 0x04)
 			{
-				// Meseta
+				// Meseta...美赛塔最高限制
 				count = *(unsigned *)&l->gameItem[itemNum].item.data2[0];
 				client->character.meseta += count;
 				if (client->character.meseta > 999999)
@@ -3764,7 +3441,7 @@ unsigned AddItemToClient(unsigned itemid, BANANA* client)
 	}
 
 	if (found_item != -1) // We won't disconnect if the item isn't found because there's a possibility another
-	{						// person may have nabbed it before our client due to lag...
+	{						// person may have nabbed it before our client due to lag...如果找不到物品,我们不会断开连接,因为有可能是另一个人在我们的客户端之前因为通信延迟而抢走了它
 		if ((item_added == 0) && (stackable))
 		{
 			memcpy(&compare_item1, &l->gameItem[itemNum].item.data[0], 3);
@@ -3779,14 +3456,14 @@ unsigned AddItemToClient(unsigned itemid, BANANA* client)
 					if (!stack_count)
 						stack_count = 1;
 
-					if ((stack_count + count) > stackable)
-					{
-						Send1A(L"Trying to stack over the limit...", client, 59);
-						client->todc = 1;
-					}
+					//if ((stack_count + count) > stackable)
+					//{//缺失 Sancaros
+					//Send1A(L"Trying to stack over the limit...", client, 59);
+					//client->todc = 1;
+					//}
 					else
 					{
-						// Add item to the client's current count...
+						// Add item to the client's current count...将物品添加到客户端的当前计数
 						client->character.inventory[ch].item.data[5] = (unsigned char)(stack_count + count);
 						item_added = 1;
 					}
@@ -3795,16 +3472,16 @@ unsigned AddItemToClient(unsigned itemid, BANANA* client)
 			}
 		}
 
-		if ((!client->todc) && (item_added == 0)) // Make sure the client isn't trying to pick up more than 30 items...
+		if ((!client->todc) && (item_added == 0)) // Make sure the client isn't trying to pick up more than 30 items... 确保客户端不尝试收集超过30个物品 
 		{
-			if (client->character.inventoryUse >= 30)
+			//if (client->character.inventoryUse >= 30)
+			//{//缺失 Sancaros
+			//Send1A(L"Inventory limit reached.", client, 60);
+			//client->todc = 1;
+			//}
+			//else
 			{
-				Send1A(L"Inventory limit reached.", client, 60);
-				client->todc = 1;
-			}
-			else
-			{
-				// Give item to client...
+				// Give item to client...将物品发送给客户端
 				client->character.inventory[client->character.inventoryUse].in_use = 0x01;
 				client->character.inventory[client->character.inventoryUse].flags = 0x00;
 				memcpy(&client->character.inventory[client->character.inventoryUse].item, &l->gameItem[itemNum].item, sizeof(ITEM));
@@ -3863,7 +3540,7 @@ void DeleteMesetaFromClient(unsigned count, unsigned drop, BANANA* client)
 		*(unsigned *)&PacketData[0x28] = count;
 		SendToLobby(client->lobby, 4, &PacketData[0], 0x2C, 0);
 
-		// Generate new game item...
+		// 生成新的游戏物品...
 
 		newItemNum = free_game_item(l);
 		if (l->gameItemCount < MAX_SAVED_ITEMS)
@@ -3894,7 +3571,7 @@ void SendItemToEnd(unsigned itemid, BANANA* client)
 
 	CleanUpInventory(client);
 
-	// Add item to client.
+	// 给客户端发送物品.
 
 	client->character.inventory[client->character.inventoryUse] = i;
 	client->character.inventoryUse++;
@@ -3910,7 +3587,7 @@ void DeleteItemFromClient(unsigned itemid, unsigned count, unsigned drop, BANANA
 	unsigned delete_item = 0;
 	unsigned stack_count;
 
-	// Deletes an item from the client's character data.
+	// 从客户端的角色数据中删除物品.
 
 	if (!client->lobby)
 		return;
@@ -3935,7 +3612,7 @@ void DeleteItemFromClient(unsigned itemid, unsigned count, unsigned drop, BANANA
 					stack_count = 1;
 
 				if (stack_count < count)
-				{
+				{//缺失 Sancaros
 					Send1A(L"Trying to delete more items than posssessed!", client, 61);
 					client->todc = 1;
 				}
@@ -4012,14 +3689,14 @@ void DeleteItemFromClient(unsigned itemid, unsigned count, unsigned drop, BANANA
 			break;
 		}
 	}
-
-	if (found_item == -1)
-	{
-		Send1A(L"Could not find item to delete.", client, 62);
-		client->todc = 1;
-	}
-	else
-		CleanUpInventory(client);
+	//sancaros
+	//if (found_item == -1)
+	//{
+	//Send1A(L"Could not find item to delete.", client, 62);
+	//client->todc = 1;
+	//}
+	//else
+	CleanUpInventory(client);
 	//此处代码有误,会导致100错误
 }
 
@@ -4061,7 +3738,7 @@ unsigned WithdrawFromBank(unsigned itemid, unsigned count, BANANA* client)
 						stack_count = 1;
 
 					if (stack_count < count) // Naughty!
-					{
+					{//缺失 Sancaros
 						Send1A(L"Trying to pull a fast one on the bank teller.", client, 63);
 						client->todc = 1;
 						found_item = -1;
@@ -4107,27 +3784,28 @@ unsigned WithdrawFromBank(unsigned itemid, unsigned count, BANANA* client)
 
 		if ((!client->todc) && (item_added == 0)) // Make sure the client isn't trying to withdraw more than 30 items...
 		{
-			if (client->character.inventoryUse >= 30)
-			{
-				Send1A(L"Inventory limit reached.", client, 60);
-				client->todc = 1;
+			/*if (client->character.inventoryUse >= 30)
+			{//缺失 Sancaros
+			Send1A(L"Inventory limit reached.", client, 60);
+			dont_send = 1;
+			//client->todc = 1;
 			}
-			else
+			else*/
+			//{
+			// Give item to client...
+			client->character.inventory[client->character.inventoryUse].in_use = 0x01;
+			client->character.inventory[client->character.inventoryUse].flags = 0x00;
+			memcpy(&client->character.inventory[client->character.inventoryUse].item, &client->character.bankInventory[found_item].data[0], sizeof(ITEM));
+			if (stackable)
 			{
-				// Give item to client...
-				client->character.inventory[client->character.inventoryUse].in_use = 0x01;
-				client->character.inventory[client->character.inventoryUse].flags = 0x00;
-				memcpy(&client->character.inventory[client->character.inventoryUse].item, &client->character.bankInventory[found_item].data[0], sizeof(ITEM));
-				if (stackable)
-				{
-					memset(&client->character.inventory[client->character.inventoryUse].item.data[4], 0, 4);
-					client->character.inventory[client->character.inventoryUse].item.data[5] = (unsigned char)count;
-				}
-				client->character.inventory[client->character.inventoryUse].item.itemid = l->itemID;
-				client->character.inventoryUse++;
-				item_added = 1;
-				//debug ("Item added to client...");
+				memset(&client->character.inventory[client->character.inventoryUse].item.data[4], 0, 4);
+				client->character.inventory[client->character.inventoryUse].item.data[5] = (unsigned char)count;
 			}
+			client->character.inventory[client->character.inventoryUse].item.itemid = l->itemID;
+			client->character.inventoryUse++;
+			item_added = 1;
+			//debug ("Item added to client...");
+			//}
 		}
 
 		if (item_added)
@@ -4156,10 +3834,10 @@ unsigned WithdrawFromBank(unsigned itemid, unsigned count, BANANA* client)
 	}
 	else
 	{
+		//缺失 Sancaros
 		Send1A(L"Could not find bank item to withdraw.", client, 64);
 		client->todc = 1;
 	}
-	//代码缺失
 	return item_added;
 }
 
@@ -4238,7 +3916,7 @@ void DepositIntoBank(unsigned itemid, unsigned count, BANANA* client)
 					stack_count = 1;
 
 				if (stack_count < count)
-				{
+				{//缺失 Sancaros
 					Send1A(L"Trying to deposit more items than in possession.", client, 65);
 					client->todc = 1; // Tried to deposit more than had?
 				}
@@ -4327,7 +4005,7 @@ void DepositIntoBank(unsigned itemid, unsigned count, BANANA* client)
 	}
 
 	if (found_item == -1)
-	{
+	{//缺失 Sancaros
 		Send1A(L"Could not find item to deposit.", client, 66);
 		client->todc = 1;
 	}
@@ -4423,13 +4101,13 @@ void DeleteFromInventory(INVENTORY_ITEM* i, unsigned count, BANANA* client)
 			break;
 		}
 	}
-	if (found_item == -1)
-	{
-		Send1A(L"Could not find item to delete from inventory.", client, 67);
-		client->todc = 1;
+	/*if (found_item == -1)
+	{//缺失 Sancaros
+	Send1A(L"Could not find item to delete from inventory.", client, 67);
+	client->todc = 1;
 	}
-	else
-		CleanUpInventory(client);
+	else*/
+	CleanUpInventory(client);
 
 }
 
@@ -4497,25 +4175,25 @@ unsigned AddToInventory(INVENTORY_ITEM* i, unsigned count, int shop, BANANA* cli
 
 		if (item_added == 0) // Make sure we don't go over the max inventory
 		{
-			if (client->character.inventoryUse >= 30)
-			{
-				Send1A(L"Inventory limit reached.", client, 60);
-				client->todc = 1;
+			/*if (client->character.inventoryUse >= 30)
+			{//缺失 Sancaros
+			Send1A(L"Inventory limit reached.", client, 60);
+			client->todc = 1;
 			}
-			else
+			else*/
+			//{
+			// Give item to client...
+			client->character.inventory[client->character.inventoryUse].in_use = 0x01;
+			client->character.inventory[client->character.inventoryUse].flags = 0x00;
+			memcpy(&client->character.inventory[client->character.inventoryUse].item, &i->item, sizeof(ITEM));
+			if (stackable)
 			{
-				// Give item to client...
-				client->character.inventory[client->character.inventoryUse].in_use = 0x01;
-				client->character.inventory[client->character.inventoryUse].flags = 0x00;
-				memcpy(&client->character.inventory[client->character.inventoryUse].item, &i->item, sizeof(ITEM));
-				if (stackable)
-				{
-					memset(&client->character.inventory[client->character.inventoryUse].item.data[4], 0, 4);
-					client->character.inventory[client->character.inventoryUse].item.data[5] = (unsigned char)count;
-				}
-				client->character.inventoryUse++;
-				item_added = 1;
+				memset(&client->character.inventory[client->character.inventoryUse].item.data[4], 0, 4);
+				client->character.inventory[client->character.inventoryUse].item.data[5] = (unsigned char)count;
 			}
+			client->character.inventoryUse++;
+			item_added = 1;
+			//}
 		}
 	}
 
@@ -4793,41 +4471,41 @@ void LogonProcessPacket(ORANGE* ship)
 			switch (ship->decryptbuf[0x05])
 			{
 			case 0x00:
-				printf("This ship's version is incompatible with the login server.\n");
+				printf("此舰船服务器的版本与登录服务器不兼容.\n");
 				printf("按下 [回车键] 退出");
 				reveal_window;
 				gets_s(&dp[0], 0);
 				exit(1);
 				break;
 			case 0x02:
-				printf("This ship's IP address is already registered with the logon server.\n");
-				printf("The IP address cannot be registered twice.  Retry in %u seconds...\n", LOGIN_RECONNECT_SECONDS);
+				printf("此舰船服务器的IP地址已在登录服务器上注册.\n");
+				printf("IP地址不能注册两次.  %u 秒后重试...\n", LOGIN_RECONNECT_SECONDS);
 				reveal_window;
 				break;
 			case 0x03:
-				printf("This ship did not pass the connection test the login server ran on it.\n");
-				printf("Please be sure the IP address specified in ship.ini is correct, your\n");
-				printf("firewall has ship_serv.exe on allow.  If behind a router, please be\n");
-				printf("sure your ports are forwarded.  Retry in %u seconds...\n", LOGIN_RECONNECT_SECONDS);
+				printf("这艘船没有通过登录服务器在其上运行的连接测试.\n");
+				printf("请确保 ship.ini 中指定的IP地址是正确的\n");
+				printf("你的防火墙在允许 ship_serve.exe 产生连接的情况下\n");
+				printf("请确保您的端口被转发.  %u 秒后重试...\n", LOGIN_RECONNECT_SECONDS);
 				reveal_window;
 				break;
 			case 0x04:
-				printf("Please do not modify any data not instructed to when connecting to this\n");
-				printf("login server...\n");
+				printf("连接到此登录服务器时\n");
+				printf("请不要修改任何未经指示的数据...\n");
 				printf("按下 [回车键] 退出");
 				reveal_window;
 				gets_s(&dp[0], 0);
 				exit(1);
 				break;
 			case 0x05:
-				printf("Your ship_key.bin file seems to be invalid.\n");
+				printf("ship_key.bin 文件无效.\n");
 				printf("按下 [回车键] 退出");
 				reveal_window;
 				gets_s(&dp[0], 0);
 				exit(1);
 				break;
 			case 0x06:
-				printf("Your ship key appears to already be in use!\n");
+				printf("舰船密匙似乎已在使用中!\n");
 				printf("按下 [回车键] 退出");
 				reveal_window;
 				gets_s(&dp[0], 0);
@@ -5510,7 +5188,7 @@ void LogonProcessPacket(ORANGE* ship)
 		{
 			BANANA* client;
 
-			// Finish up the logon process here.
+			// Finish up the logon process here. 在这里完成登录过程 
 
 			for (ch = 0;ch<serverNumConnections;ch++)
 			{
@@ -6503,10 +6181,11 @@ void FeedMag(unsigned magid, unsigned itemid, BANANA* client)
 		}
 	}
 
+	//缺失 Sancaros
 	if ((found_mag == -1) || (found_item == -1))
 	{
-		Send1A(L"Could not find mag to feed or item to feed said mag.", client, 76);
-		client->todc = 1;
+		//Send1A(L"Could not find mag to feed or item to feed said mag.", client, 76);
+		//client->todc = 1;
 	}
 	else
 	{
@@ -6755,723 +6434,723 @@ void UseItem(unsigned itemid, BANANA* client)
 		}
 	}
 
-	if (!found_item)
-	{
-		Send1A(L"Could not find item to \"use\".", client, 77);
-		client->todc = 1;
+	/*if (!found_item)
+	{//缺失 Sancaros
+	Send1A(L"Could not find item to \"use\".", client, 77);
+	//client->todc = 1;
 	}
-	else
-	{
-		// Setting the eq variables here should fix problem with ADD SLOT and such.
-		eq_wep = eq_armor = eq_shield = eq_mag = -1;
+	else*/
+	//{
+	// Setting the eq variables here should fix problem with ADD SLOT and such.
+	eq_wep = eq_armor = eq_shield = eq_mag = -1;
 
-		for (ch2 = 0;ch2<client->character.inventoryUse;ch2++)
+	for (ch2 = 0;ch2<client->character.inventoryUse;ch2++)
+	{
+		if (client->character.inventory[ch2].flags & 0x08)
 		{
-			if (client->character.inventory[ch2].flags & 0x08)
+			switch (client->character.inventory[ch2].item.data[0])
 			{
-				switch (client->character.inventory[ch2].item.data[0])
+			case 0x00:
+				eq_wep = ch2;
+				break;
+			case 0x01:
+				switch (client->character.inventory[ch2].item.data[1])
 				{
-				case 0x00:
-					eq_wep = ch2;
-					break;
 				case 0x01:
-					switch (client->character.inventory[ch2].item.data[1])
-					{
-					case 0x01:
-						eq_armor = ch2;
-						break;
-					case 0x02:
-						eq_shield = ch2;
-						break;
-					}
+					eq_armor = ch2;
 					break;
 				case 0x02:
-					eq_mag = ch2;
+					eq_shield = ch2;
 					break;
 				}
+				break;
+			case 0x02:
+				eq_mag = ch2;
+				break;
 			}
 		}
+	}
 
-		switch (i.item.data[0])
+	switch (i.item.data[0])
+	{
+	case 0x00:
+		switch (i.item.data[1])
 		{
-		case 0x00:
-			switch (i.item.data[1])
-			{
-			case 0x33:
-				client->character.inventory[ch].item.data[1] = 0x32; // Sealed J-Sword -> Tsumikiri J-Sword
-				SendItemToEnd(itemid, client);
-				break;
-			case 0x1E:
-				// Heaven Punisher used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xAF) &&
-					(client->character.inventory[eq_wep].item.data[2] == 0x00))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0xB0; // Mille Marteaux
-					client->character.inventory[eq_wep].item.data[2] = 0x00;
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Heaven Punisher
-				break;
-			case 0x42:
-				// Handgun: Guld or Master Raven used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x43) &&
-					(client->character.inventory[eq_wep].item.data[2] == i.item.data[2]) &&
-					(client->character.inventory[eq_wep].item.data[3] == 0x09))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0x4B; // Guld Milla or Dual Bird
-					client->character.inventory[eq_wep].item.data[2] = i.item.data[2];
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Guld or Raven...
-				break;
-			case 0x43:
-				// Handgun: Milla or Last Swan used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x42) &&
-					(client->character.inventory[eq_wep].item.data[2] == i.item.data[2]) &&
-					(client->character.inventory[eq_wep].item.data[3] == 0x09))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0x4B; // Guld Milla or Dual Bird
-					client->character.inventory[eq_wep].item.data[2] = i.item.data[2];
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Milla or Swan...
-				break;
-			case 0x8A:
-				// Sange or Yasha...
-				if (eq_wep != -1)
-				{
-					if (client->character.inventory[eq_wep].item.data[2] == !(i.item.data[2]))
-					{
-						client->character.inventory[eq_wep].item.data[1] = 0x89;
-						client->character.inventory[eq_wep].item.data[2] = 0x03;
-						client->character.inventory[eq_wep].item.data[3] = 0x00;
-						client->character.inventory[eq_wep].item.data[4] = 0x00;
-						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-					}
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of the other sword...
-				break;
-			case 0xAB:
-				client->character.inventory[ch].item.data[1] = 0xAC; // Convert Lame d'Argent into Excalibur
-				SendItemToEnd(itemid, client);
-				break;
-			case 0xAF:
-				// Ophelie Seize used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x1E) &&
-					(client->character.inventory[eq_wep].item.data[2] == 0x00))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0xB0; // Mille Marteaux
-					client->character.inventory[eq_wep].item.data[2] = 0x00;
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Ophelie Seize
-				break;
-			case 0xB6:
-				// Guren used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xB7) &&
-					(client->character.inventory[eq_wep].item.data[2] == 0x00))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0xB8; // Jizai
-					client->character.inventory[eq_wep].item.data[2] = 0x00;
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Guren
-				break;
-			case 0xB7:
-				// Shouren used...
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xB6) &&
-					(client->character.inventory[eq_wep].item.data[2] == 0x00))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0xB8; // Jizai
-					client->character.inventory[eq_wep].item.data[2] = 0x00;
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Shouren
-				break;
-			}
+		case 0x33:
+			client->character.inventory[ch].item.data[1] = 0x32; // Sealed J-Sword -> Tsumikiri J-Sword
+			SendItemToEnd(itemid, client);
 			break;
-		case 0x01:
-			if (i.item.data[1] == 0x03)
+		case 0x1E:
+			// Heaven Punisher used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xAF) &&
+				(client->character.inventory[eq_wep].item.data[2] == 0x00))
 			{
-				if (i.item.data[2] == 0x4D) // Limiter -> Adept
+				client->character.inventory[eq_wep].item.data[1] = 0xB0; // Mille Marteaux
+				client->character.inventory[eq_wep].item.data[2] = 0x00;
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Heaven Punisher
+			break;
+		case 0x42:
+			// Handgun: Guld or Master Raven used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x43) &&
+				(client->character.inventory[eq_wep].item.data[2] == i.item.data[2]) &&
+				(client->character.inventory[eq_wep].item.data[3] == 0x09))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0x4B; // Guld Milla or Dual Bird
+				client->character.inventory[eq_wep].item.data[2] = i.item.data[2];
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Guld or Raven...
+			break;
+		case 0x43:
+			// Handgun: Milla or Last Swan used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x42) &&
+				(client->character.inventory[eq_wep].item.data[2] == i.item.data[2]) &&
+				(client->character.inventory[eq_wep].item.data[3] == 0x09))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0x4B; // Guld Milla or Dual Bird
+				client->character.inventory[eq_wep].item.data[2] = i.item.data[2];
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Milla or Swan...
+			break;
+		case 0x8A:
+			// Sange or Yasha...
+			if (eq_wep != -1)
+			{
+				if (client->character.inventory[eq_wep].item.data[2] == !(i.item.data[2]))
 				{
-					client->character.inventory[ch].item.data[2] = 0x4E;
-					SendItemToEnd(itemid, client);
+					client->character.inventory[eq_wep].item.data[1] = 0x89;
+					client->character.inventory[eq_wep].item.data[2] = 0x03;
+					client->character.inventory[eq_wep].item.data[3] = 0x00;
+					client->character.inventory[eq_wep].item.data[4] = 0x00;
+					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 				}
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of the other sword...
+			break;
+		case 0xAB:
+			client->character.inventory[ch].item.data[1] = 0xAC; // Convert Lame d'Argent into Excalibur
+			SendItemToEnd(itemid, client);
+			break;
+		case 0xAF:
+			// Ophelie Seize used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x1E) &&
+				(client->character.inventory[eq_wep].item.data[2] == 0x00))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0xB0; // Mille Marteaux
+				client->character.inventory[eq_wep].item.data[2] = 0x00;
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Ophelie Seize
+			break;
+		case 0xB6:
+			// Guren used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xB7) &&
+				(client->character.inventory[eq_wep].item.data[2] == 0x00))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0xB8; // Jizai
+				client->character.inventory[eq_wep].item.data[2] = 0x00;
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Guren
+			break;
+		case 0xB7:
+			// Shouren used...
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0xB6) &&
+				(client->character.inventory[eq_wep].item.data[2] == 0x00))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0xB8; // Jizai
+				client->character.inventory[eq_wep].item.data[2] = 0x00;
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Shouren
+			break;
+		}
+		break;
+	case 0x01:
+		if (i.item.data[1] == 0x03)
+		{
+			if (i.item.data[2] == 0x4D) // Limiter -> Adept
+			{
+				client->character.inventory[ch].item.data[2] = 0x4E;
+				SendItemToEnd(itemid, client);
+			}
 
-				if (i.item.data[2] == 0x4F) // Swordsman Lore -> Proof of Sword-Saint
-				{
-					client->character.inventory[ch].item.data[2] = 0x50;
-					SendItemToEnd(itemid, client);
-				}
+			if (i.item.data[2] == 0x4F) // Swordsman Lore -> Proof of Sword-Saint
+			{
+				client->character.inventory[ch].item.data[2] = 0x50;
+				SendItemToEnd(itemid, client);
 			}
+		}
+		break;
+	case 0x02:
+		switch (i.item.data[1])
+		{
+		case 0x2B:
+			// Chao Mag used
+			if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x68) &&
+				(client->character.inventory[eq_wep].item.data[2] == 0x00))
+			{
+				client->character.inventory[eq_wep].item.data[1] = 0x58; // Striker of Chao
+				client->character.inventory[eq_wep].item.data[2] = 0x00;
+				client->character.inventory[eq_wep].item.data[3] = 0x00;
+				client->character.inventory[eq_wep].item.data[4] = 0x00;
+				SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Chao
 			break;
+		case 0x2C:
+			// Chu Chu mag used
+			if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
+			{
+				client->character.inventory[eq_armor].item.data[2] = 0x2C; // Chuchu Fever
+				SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+			}
+			DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Chu Chu
+			break;
+		}
+		break;
+	case 0x03:
+		switch (i.item.data[1])
+		{
 		case 0x02:
-			switch (i.item.data[1])
+			if (i.item.data[4] < 19)
 			{
-			case 0x2B:
-				// Chao Mag used
-				if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x68) &&
-					(client->character.inventory[eq_wep].item.data[2] == 0x00))
-				{
-					client->character.inventory[eq_wep].item.data[1] = 0x58; // Striker of Chao
-					client->character.inventory[eq_wep].item.data[2] = 0x00;
-					client->character.inventory[eq_wep].item.data[3] = 0x00;
-					client->character.inventory[eq_wep].item.data[4] = 0x00;
-					SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Chao
-				break;
-			case 0x2C:
-				// Chu Chu mag used
-				if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
-				{
-					client->character.inventory[eq_armor].item.data[2] = 0x2C; // Chuchu Fever
-					SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-				}
-				DeleteItemFromClient(itemid, 1, 0, client); // Get rid of Chu Chu
-				break;
-			}
-			break;
-		case 0x03:
-			switch (i.item.data[1])
-			{
-			case 0x02:
-				if (i.item.data[4] < 19)
-				{
-					if (((char)i.item.data[2] > max_tech_level[i.item.data[4]][client->character._class]) ||
-						(client->equip_flags & DROID_FLAG))
-					{
-						Send1A(L"You can't learn that technique.", client, 78);
-						client->todc = 1;
-					}
-					else
-						client->character.techniques[i.item.data[4]] = i.item.data[2]; // Learn technique
-				}
-				break;
-			case 0x0A:
-				if (eq_wep != -1)
-				{
-					client->character.inventory[eq_wep].item.data[3] += (i.item.data[2] + 1);
-					CheckMaxGrind(&client->character.inventory[eq_wep]);
-					break;
-				}
-				break;
-			case 0x0B:
-				if (!client->mode)
-				{
-					HPMatUse = (client->character.HPmat + client->character.TPmat) / 2;
-					TotalMatUse = 0;
-					for (ch2 = 0;ch2<5;ch2++)
-						TotalMatUse += client->matuse[ch2];
-					mat_exceed = 0;
-					if (client->equip_flags & HUMAN_FLAG)
-						max_mat = 250;
-					else
-						max_mat = 150;
-				}
-				else
-				{
-					TotalMatUse = 0;
-					HPMatUse = 0;
-					max_mat = 999;
-					mat_exceed = 0;
-				}
-				switch (i.item.data[2])  // Materials
-				{
-				case 0x00:
-					if (TotalMatUse < max_mat)
-					{
-						client->character.ATP += 2;
-						if (!client->mode)
-							client->matuse[0]++;
-					}
-					else
-						mat_exceed = 1;
-					break;
-				case 0x01:
-					if (TotalMatUse < max_mat)
-					{
-						client->character.MST += 2;
-						if (!client->mode)
-							client->matuse[1]++;
-					}
-					else
-						mat_exceed = 1;
-					break;
-				case 0x02:
-					if (TotalMatUse < max_mat)
-					{
-						client->character.EVP += 2;
-						if (!client->mode)
-							client->matuse[2]++;
-					}
-					else
-						mat_exceed = 1;
-					break;
-				case 0x03:
-					if ((client->character.HPmat < 250) && (HPMatUse < 250))
-						client->character.HPmat += 2;
-					else
-						mat_exceed = 1;
-					break;
-				case 0x04:
-					if ((client->character.TPmat < 250) && (HPMatUse < 250))
-						client->character.TPmat += 2;
-					else
-						mat_exceed = 1;
-					break;
-				case 0x05:
-					if (TotalMatUse < max_mat)
-					{
-						client->character.DFP += 2;
-						if (!client->mode)
-							client->matuse[3]++;
-					}
-					else
-						mat_exceed = 1;
-					break;
-				case 0x06:
-					if (TotalMatUse < max_mat)
-					{
-						client->character.LCK += 2;
-						if (!client->mode)
-							client->matuse[4]++;
-					}
-					else
-						mat_exceed = 1;
-					break;
-				default:
-					break;
-				}
-				if (mat_exceed)
-				{
-					Send1A(L"Attempt to exceed material usage limit.", client, 79);
+				if (((char)i.item.data[2] > max_tech_level[i.item.data[4]][client->character._class]) ||
+					(client->equip_flags & DROID_FLAG))
+				{//缺失 Sancaros
+					Send1A(L"You can't learn that technique.", client, 78);
 					client->todc = 1;
 				}
+				else
+					client->character.techniques[i.item.data[4]] = i.item.data[2]; // Learn technique
+			}
+			break;
+		case 0x0A:
+			if (eq_wep != -1)
+			{
+				client->character.inventory[eq_wep].item.data[3] += (i.item.data[2] + 1);
+				CheckMaxGrind(&client->character.inventory[eq_wep]);
 				break;
-			case 0x0C:
-				switch (i.item.data[2])
+			}
+			break;
+		case 0x0B:
+			if (!client->mode)
+			{
+				HPMatUse = (client->character.HPmat + client->character.TPmat) / 2;
+				TotalMatUse = 0;
+				for (ch2 = 0;ch2<5;ch2++)
+					TotalMatUse += client->matuse[ch2];
+				mat_exceed = 0;
+				if (client->equip_flags & HUMAN_FLAG)
+					max_mat = 250;
+				else
+					max_mat = 150;
+			}
+			else
+			{
+				TotalMatUse = 0;
+				HPMatUse = 0;
+				max_mat = 999;
+				mat_exceed = 0;
+			}
+			switch (i.item.data[2])  // Materials
+			{
+			case 0x00:
+				if (TotalMatUse < max_mat)
 				{
-				case 0x00: // Mag Cell 502
-					if (eq_mag != -1)
-					{
-						if (client->character.sectionID & 0x01)
-							client->character.inventory[eq_mag].item.data[1] = 0x1D;
-						else
-							client->character.inventory[eq_mag].item.data[1] = 0x21;
-					}
-					break;
-				case 0x01: // Mag Cell 213
-					if (eq_mag != -1)
-					{
-						if (client->character.sectionID & 0x01)
-							client->character.inventory[eq_mag].item.data[1] = 0x27;
-						else
-							client->character.inventory[eq_mag].item.data[1] = 0x22;
-					}
-					break;
-				case 0x02: // Parts of RoboChao
-					if (eq_mag != -1)
-						client->character.inventory[eq_mag].item.data[1] = 0x28;
-					break;
-				case 0x03: // Heart of Opa Opa
-					if (eq_mag != -1)
-						client->character.inventory[eq_mag].item.data[1] = 0x29;
-					break;
-				case 0x04: // Heart of Pian
-					if (eq_mag != -1)
-						client->character.inventory[eq_mag].item.data[1] = 0x2A;
-					break;
-				case 0x05: // Heart of Chao
-					if (eq_mag != -1)
-						client->character.inventory[eq_mag].item.data[1] = 0x2B;
-					break;
-				}
-				break;
-			case 0x0E:
-				if ((eq_shield != -1) && (i.item.data[2] > 0x15) && (i.item.data[2] < 0x26))
-				{
-					// Merges
-					client->character.inventory[eq_shield].item.data[2] = 0x3A + (i.item.data[2] - 0x16);
-					SendItemToEnd(client->character.inventory[eq_shield].item.itemid, client);
+					client->character.ATP += 2;
+					if (!client->mode)
+						client->matuse[0]++;
 				}
 				else
-					switch (i.item.data[2])
+					mat_exceed = 1;
+				break;
+			case 0x01:
+				if (TotalMatUse < max_mat)
+				{
+					client->character.MST += 2;
+					if (!client->mode)
+						client->matuse[1]++;
+				}
+				else
+					mat_exceed = 1;
+				break;
+			case 0x02:
+				if (TotalMatUse < max_mat)
+				{
+					client->character.EVP += 2;
+					if (!client->mode)
+						client->matuse[2]++;
+				}
+				else
+					mat_exceed = 1;
+				break;
+			case 0x03:
+				if ((client->character.HPmat < 250) && (HPMatUse < 250))
+					client->character.HPmat += 2;
+				else
+					mat_exceed = 1;
+				break;
+			case 0x04:
+				if ((client->character.TPmat < 250) && (HPMatUse < 250))
+					client->character.TPmat += 2;
+				else
+					mat_exceed = 1;
+				break;
+			case 0x05:
+				if (TotalMatUse < max_mat)
+				{
+					client->character.DFP += 2;
+					if (!client->mode)
+						client->matuse[3]++;
+				}
+				else
+					mat_exceed = 1;
+				break;
+			case 0x06:
+				if (TotalMatUse < max_mat)
+				{
+					client->character.LCK += 2;
+					if (!client->mode)
+						client->matuse[4]++;
+				}
+				else
+					mat_exceed = 1;
+				break;
+			default:
+				break;
+			}
+			if (mat_exceed)
+			{//缺失 Sancaros
+				Send1A(L"Attempt to exceed material usage limit.", client, 79);
+				client->todc = 1;
+			}
+			break;
+		case 0x0C:
+			switch (i.item.data[2])
+			{
+			case 0x00: // Mag Cell 502
+				if (eq_mag != -1)
+				{
+					if (client->character.sectionID & 0x01)
+						client->character.inventory[eq_mag].item.data[1] = 0x1D;
+					else
+						client->character.inventory[eq_mag].item.data[1] = 0x21;
+				}
+				break;
+			case 0x01: // Mag Cell 213
+				if (eq_mag != -1)
+				{
+					if (client->character.sectionID & 0x01)
+						client->character.inventory[eq_mag].item.data[1] = 0x27;
+					else
+						client->character.inventory[eq_mag].item.data[1] = 0x22;
+				}
+				break;
+			case 0x02: // Parts of RoboChao
+				if (eq_mag != -1)
+					client->character.inventory[eq_mag].item.data[1] = 0x28;
+				break;
+			case 0x03: // Heart of Opa Opa
+				if (eq_mag != -1)
+					client->character.inventory[eq_mag].item.data[1] = 0x29;
+				break;
+			case 0x04: // Heart of Pian
+				if (eq_mag != -1)
+					client->character.inventory[eq_mag].item.data[1] = 0x2A;
+				break;
+			case 0x05: // Heart of Chao
+				if (eq_mag != -1)
+					client->character.inventory[eq_mag].item.data[1] = 0x2B;
+				break;
+			}
+			break;
+		case 0x0E:
+			if ((eq_shield != -1) && (i.item.data[2] > 0x15) && (i.item.data[2] < 0x26))
+			{
+				// Merges
+				client->character.inventory[eq_shield].item.data[2] = 0x3A + (i.item.data[2] - 0x16);
+				SendItemToEnd(client->character.inventory[eq_shield].item.itemid, client);
+			}
+			else
+				switch (i.item.data[2])
+				{
+				case 0x00:
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x8E))
 					{
-					case 0x00:
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x8E))
+						client->character.inventory[eq_wep].item.data[1] = 0x8E;
+						client->character.inventory[eq_wep].item.data[2] = 0x01; // S-Berill's Hands #1
+						client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+						client->character.inventory[eq_wep].item.data[4] = 0x00;
+						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+						break;
+					}
+					break;
+				case 0x01: // Parasitic Gene "Flow"
+					if (eq_wep != -1)
+					{
+						switch (client->character.inventory[eq_wep].item.data[1])
 						{
-							client->character.inventory[eq_wep].item.data[1] = 0x8E;
-							client->character.inventory[eq_wep].item.data[2] = 0x01; // S-Berill's Hands #1
+						case 0x02:
+							client->character.inventory[eq_wep].item.data[1] = 0x9D; // Dark Flow
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
 							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
 							client->character.inventory[eq_wep].item.data[4] = 0x00;
 							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 							break;
-						}
-						break;
-					case 0x01: // Parasitic Gene "Flow"
-						if (eq_wep != -1)
-						{
-							switch (client->character.inventory[eq_wep].item.data[1])
-							{
-							case 0x02:
-								client->character.inventory[eq_wep].item.data[1] = 0x9D; // Dark Flow
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
-							case 0x09:
-								client->character.inventory[eq_wep].item.data[1] = 0x9E; // Dark Meteor
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
-							case 0x0B:
-								client->character.inventory[eq_wep].item.data[1] = 0x9F; // Dark Bridge
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
-							}
-						}
-						break;
-					case 0x02: // Magic Stone "Iritista"
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x05))
-						{
-							client->character.inventory[eq_wep].item.data[1] = 0x9C; // Rainbow Baton
+						case 0x09:
+							client->character.inventory[eq_wep].item.data[1] = 0x9E; // Dark Meteor
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
+							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+							client->character.inventory[eq_wep].item.data[4] = 0x00;
+							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							break;
+						case 0x0B:
+							client->character.inventory[eq_wep].item.data[1] = 0x9F; // Dark Bridge
 							client->character.inventory[eq_wep].item.data[2] = 0x00;
 							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
 							client->character.inventory[eq_wep].item.data[4] = 0x00;
 							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 							break;
 						}
+					}
+					break;
+				case 0x02: // Magic Stone "Iritista"
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x05))
+					{
+						client->character.inventory[eq_wep].item.data[1] = 0x9C; // Rainbow Baton
+						client->character.inventory[eq_wep].item.data[2] = 0x00;
+						client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+						client->character.inventory[eq_wep].item.data[4] = 0x00;
+						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 						break;
-					case 0x03: // Blue-Black Stone
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x2F) &&
-							(client->character.inventory[eq_wep].item.data[2] == 0x00) &&
-							(client->character.inventory[eq_wep].item.data[3] == 0x19))
+					}
+					break;
+				case 0x03: // Blue-Black Stone
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x2F) &&
+						(client->character.inventory[eq_wep].item.data[2] == 0x00) &&
+						(client->character.inventory[eq_wep].item.data[3] == 0x19))
+					{
+						client->character.inventory[eq_wep].item.data[2] = 0x01; // Black King Bar
+						client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+						client->character.inventory[eq_wep].item.data[4] = 0x00;
+						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+						break;
+					}
+					break;
+				case 0x04: // Syncesta
+					if (eq_wep != -1)
+					{
+						switch (client->character.inventory[eq_wep].item.data[1])
 						{
-							client->character.inventory[eq_wep].item.data[2] = 0x01; // Black King Bar
+						case 0x1F:
+							client->character.inventory[eq_wep].item.data[1] = 0x38; // Lavis Blade
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
+							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+							client->character.inventory[eq_wep].item.data[4] = 0x00;
+							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							break;
+						case 0x38:
+							client->character.inventory[eq_wep].item.data[1] = 0x30; // Double Cannon
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
+							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+							client->character.inventory[eq_wep].item.data[4] = 0x00;
+							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							break;
+						case 0x30:
+							client->character.inventory[eq_wep].item.data[1] = 0x1F; // Lavis Cannon
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
 							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
 							client->character.inventory[eq_wep].item.data[4] = 0x00;
 							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 							break;
 						}
-						break;
-					case 0x04: // Syncesta
-						if (eq_wep != -1)
+					}
+					break;
+				case 0x05: // Magic Water
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x56))
+					{
+						if (client->character.inventory[eq_wep].item.data[2] == 0x00)
 						{
-							switch (client->character.inventory[eq_wep].item.data[1])
+							client->character.inventory[eq_wep].item.data[1] = 0x5D; // Plantain Fan
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
+							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+							client->character.inventory[eq_wep].item.data[4] = 0x00;
+							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							break;
+						}
+						else
+							if (client->character.inventory[eq_wep].item.data[2] == 0x01)
 							{
-							case 0x1F:
-								client->character.inventory[eq_wep].item.data[1] = 0x38; // Lavis Blade
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
-							case 0x38:
-								client->character.inventory[eq_wep].item.data[1] = 0x30; // Double Cannon
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
-							case 0x30:
-								client->character.inventory[eq_wep].item.data[1] = 0x1F; // Lavis Cannon
+								client->character.inventory[eq_wep].item.data[1] = 0x63; // Plantain Huge Fan
 								client->character.inventory[eq_wep].item.data[2] = 0x00;
 								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
 								client->character.inventory[eq_wep].item.data[4] = 0x00;
 								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 								break;
 							}
-						}
-						break;
-					case 0x05: // Magic Water
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x56))
+					}
+					break;
+				case 0x06: // Parasitic Cell Type D
+					if (eq_armor != -1)
+						switch (client->character.inventory[eq_armor].item.data[2])
 						{
-							if (client->character.inventory[eq_wep].item.data[2] == 0x00)
+						case 0x1D:
+							client->character.inventory[eq_armor].item.data[2] = 0x20; // Parasite Wear: De Rol
+							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+							break;
+						case 0x20:
+							client->character.inventory[eq_armor].item.data[2] = 0x21; // Parsite Wear: Nelgal
+							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+							break;
+						case 0x21:
+							client->character.inventory[eq_armor].item.data[2] = 0x22; // Parasite Wear: Vajulla
+							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+							break;
+						case 0x22:
+							client->character.inventory[eq_armor].item.data[2] = 0x2F; // Virus Armor: Lafuteria
+							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+							break;
+						}
+					break;
+				case 0x07: // Magic Rock "Heart Key"
+					if (eq_armor != -1)
+					{
+						if (client->character.inventory[eq_armor].item.data[2] == 0x1C)
+						{
+							client->character.inventory[eq_armor].item.data[2] = 0x2D; // Love Heart
+							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+						}
+						else
+							if (client->character.inventory[eq_armor].item.data[2] == 0x2D)
 							{
-								client->character.inventory[eq_wep].item.data[1] = 0x5D; // Plantain Fan
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00;
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								break;
+								client->character.inventory[eq_armor].item.data[2] = 0x45; // Sweetheart
+								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
 							}
 							else
-								if (client->character.inventory[eq_wep].item.data[2] == 0x01)
+								if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0C))
 								{
-									client->character.inventory[eq_wep].item.data[1] = 0x63; // Plantain Huge Fan
+									client->character.inventory[eq_wep].item.data[1] = 0x24; // Magical Piece
 									client->character.inventory[eq_wep].item.data[2] = 0x00;
 									client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
 									client->character.inventory[eq_wep].item.data[4] = 0x00;
 									SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-									break;
-								}
-						}
-						break;
-					case 0x06: // Parasitic Cell Type D
-						if (eq_armor != -1)
-							switch (client->character.inventory[eq_armor].item.data[2])
-							{
-							case 0x1D:
-								client->character.inventory[eq_armor].item.data[2] = 0x20; // Parasite Wear: De Rol
-								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-								break;
-							case 0x20:
-								client->character.inventory[eq_armor].item.data[2] = 0x21; // Parsite Wear: Nelgal
-								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-								break;
-							case 0x21:
-								client->character.inventory[eq_armor].item.data[2] = 0x22; // Parasite Wear: Vajulla
-								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-								break;
-							case 0x22:
-								client->character.inventory[eq_armor].item.data[2] = 0x2F; // Virus Armor: Lafuteria
-								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-								break;
-							}
-						break;
-					case 0x07: // Magic Rock "Heart Key"
-						if (eq_armor != -1)
-						{
-							if (client->character.inventory[eq_armor].item.data[2] == 0x1C)
-							{
-								client->character.inventory[eq_armor].item.data[2] = 0x2D; // Love Heart
-								SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-							}
-							else
-								if (client->character.inventory[eq_armor].item.data[2] == 0x2D)
-								{
-									client->character.inventory[eq_armor].item.data[2] = 0x45; // Sweetheart
-									SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
 								}
 								else
-									if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0C))
+									if ((eq_shield != -1) && (client->character.inventory[eq_shield].item.data[2] == 0x15))
 									{
-										client->character.inventory[eq_wep].item.data[1] = 0x24; // Magical Piece
-										client->character.inventory[eq_wep].item.data[2] = 0x00;
-										client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-										client->character.inventory[eq_wep].item.data[4] = 0x00;
-										SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+										client->character.inventory[eq_shield].item.data[2] = 0x2A; // Safety Heart
+										SendItemToEnd(client->character.inventory[eq_shield].item.itemid, client);
 									}
-									else
-										if ((eq_shield != -1) && (client->character.inventory[eq_shield].item.data[2] == 0x15))
-										{
-											client->character.inventory[eq_shield].item.data[2] = 0x2A; // Safety Heart
-											SendItemToEnd(client->character.inventory[eq_shield].item.itemid, client);
-										}
-						}
-						break;
-					case 0x08: // Magic Rock "Moola"
-						if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
+					}
+					break;
+				case 0x08: // Magic Rock "Moola"
+					if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
+					{
+						client->character.inventory[eq_armor].item.data[2] = 0x31; // Aura Field
+						SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
+					}
+					else
+						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0A))
 						{
-							client->character.inventory[eq_armor].item.data[2] = 0x31; // Aura Field
-							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-						}
-						else
-							if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0A))
-							{
-								client->character.inventory[eq_wep].item.data[1] = 0x4F; // Summit Moon
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00; // No attribute
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-							}
-						break;
-					case 0x09: // Star Amplifier
-						if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
-						{
-							client->character.inventory[eq_armor].item.data[2] = 0x30; // Brightness Circle
-							SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
-						}
-						else
-							if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0C))
-							{
-								client->character.inventory[eq_wep].item.data[1] = 0x5C; // Twinkle Star
-								client->character.inventory[eq_wep].item.data[2] = 0x00;
-								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-								client->character.inventory[eq_wep].item.data[4] = 0x00; // No attribute
-								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-							}
-						break;
-					case 0x0A: // Book of Hitogata
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x8C) &&
-							(client->character.inventory[eq_wep].item.data[2] == 0x02) &&
-							(client->character.inventory[eq_wep].item.data[3] == 0x09))
-						{
-							client->character.inventory[eq_wep].item.data[1] = 0x8C;
-							client->character.inventory[eq_wep].item.data[2] = 0x03;
-							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-							client->character.inventory[eq_wep].item.data[4] = 0x00;
-							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-						}
-						break;
-					case 0x0B: // Heart of Chu Chu
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x2C;
-						break;
-					case 0x0C: // Parts of Egg Blaster
-						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x06))
-						{
-							client->character.inventory[eq_wep].item.data[1] = 0x1C; // Egg Blaster
+							client->character.inventory[eq_wep].item.data[1] = 0x4F; // Summit Moon
 							client->character.inventory[eq_wep].item.data[2] = 0x00;
 							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-							client->character.inventory[eq_wep].item.data[4] = 0x00;
+							client->character.inventory[eq_wep].item.data[4] = 0x00; // No attribute
 							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
 						}
-						break;
-					case 0x0D: // Heart of Angel
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x2E;
-						break;
-					case 0x0E: // Heart of Devil
-						if (eq_mag != -1)
-						{
-							if (client->character.inventory[eq_mag].item.data[1] == 0x2F)
-								client->character.inventory[eq_mag].item.data[1] = 0x38;
-							else
-								client->character.inventory[eq_mag].item.data[1] = 0x2F;
-						}
-						break;
-					case 0x0F: // Kit of Hamburger
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x36;
-						break;
-					case 0x10: // Panther's Spirit
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x37;
-						break;
-					case 0x11: // Kit of Mark 3
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x31;
-						break;
-					case 0x12: // Kit of Master System
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x32;
-						break;
-					case 0x13: // Kit of Genesis
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x33;
-						break;
-					case 0x14: // Kit of Sega Saturn
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x34;
-						break;
-					case 0x15: // Kit of Dreamcast
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x35;
-						break;
-					case 0x26: // Heart of Kapukapu
-						if (eq_mag != -1)
-							client->character.inventory[eq_mag].item.data[1] = 0x2D;
-						break;
-					case 0x27: // Photon Booster
-						if (eq_wep != -1)
-						{
-							switch (client->character.inventory[eq_wep].item.data[1])
-							{
-							case 0x15:
-								if (client->character.inventory[eq_wep].item.data[3] == 0x09)
-								{
-									client->character.inventory[eq_wep].item.data[2] = 0x01; // Burning Visit
-									client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-									client->character.inventory[eq_wep].item.data[4] = 0x00;
-									SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								}
-								break;
-							case 0x45:
-								if (client->character.inventory[eq_wep].item.data[3] == 0x09)
-								{
-									client->character.inventory[eq_wep].item.data[2] = 0x01; // Snow Queen
-									client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-									client->character.inventory[eq_wep].item.data[4] = 0x00;
-									SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								}
-								break;
-							case 0x4E:
-								if (client->character.inventory[eq_wep].item.data[3] == 0x09)
-								{
-									client->character.inventory[eq_wep].item.data[2] = 0x01; // Iron Faust
-									client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-									client->character.inventory[eq_wep].item.data[4] = 0x00;
-									SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								}
-								break;
-							case 0x6D:
-								if (client->character.inventory[eq_wep].item.data[3] == 0x14)
-								{
-									client->character.inventory[eq_wep].item.data[2] = 0x01; // Power Maser
-									client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
-									client->character.inventory[eq_wep].item.data[4] = 0x00;
-									SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
-								}
-								break;
-							}
-						}
-						break;
-
+					break;
+				case 0x09: // Star Amplifier
+					if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[2] == 0x1C))
+					{
+						client->character.inventory[eq_armor].item.data[2] = 0x30; // Brightness Circle
+						SendItemToEnd(client->character.inventory[eq_armor].item.itemid, client);
 					}
-				break;
-			case 0x0F: // Add Slot
-				if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[5] < 0x04))
-					client->character.inventory[eq_armor].item.data[5]++;
-				break;
-			case 0x15:
-				new_item = 0;
-				switch (i.item.data[2])
-				{
-				case 0x00:
-					new_item = 0x0D0E03 + ((mt_lrand() % 9) * 0x10000);
+					else
+						if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x0C))
+						{
+							client->character.inventory[eq_wep].item.data[1] = 0x5C; // Twinkle Star
+							client->character.inventory[eq_wep].item.data[2] = 0x00;
+							client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+							client->character.inventory[eq_wep].item.data[4] = 0x00; // No attribute
+							SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+						}
 					break;
-				case 0x01:
-					new_item = easter_drops[mt_lrand() % 9];
+				case 0x0A: // Book of Hitogata
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x8C) &&
+						(client->character.inventory[eq_wep].item.data[2] == 0x02) &&
+						(client->character.inventory[eq_wep].item.data[3] == 0x09))
+					{
+						client->character.inventory[eq_wep].item.data[1] = 0x8C;
+						client->character.inventory[eq_wep].item.data[2] = 0x03;
+						client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+						client->character.inventory[eq_wep].item.data[4] = 0x00;
+						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+					}
 					break;
-				case 0x02:
-					new_item = jacko_drops[mt_lrand() % 8];
+				case 0x0B: // Heart of Chu Chu
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x2C;
 					break;
-				default:
+				case 0x0C: // Parts of Egg Blaster
+					if ((eq_wep != -1) && (client->character.inventory[eq_wep].item.data[1] == 0x06))
+					{
+						client->character.inventory[eq_wep].item.data[1] = 0x1C; // Egg Blaster
+						client->character.inventory[eq_wep].item.data[2] = 0x00;
+						client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+						client->character.inventory[eq_wep].item.data[4] = 0x00;
+						SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+					}
 					break;
-				}
+				case 0x0D: // Heart of Angel
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x2E;
+					break;
+				case 0x0E: // Heart of Devil
+					if (eq_mag != -1)
+					{
+						if (client->character.inventory[eq_mag].item.data[1] == 0x2F)
+							client->character.inventory[eq_mag].item.data[1] = 0x38;
+						else
+							client->character.inventory[eq_mag].item.data[1] = 0x2F;
+					}
+					break;
+				case 0x0F: // Kit of Hamburger
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x36;
+					break;
+				case 0x10: // Panther's Spirit
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x37;
+					break;
+				case 0x11: // Kit of Mark 3
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x31;
+					break;
+				case 0x12: // Kit of Master System
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x32;
+					break;
+				case 0x13: // Kit of Genesis
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x33;
+					break;
+				case 0x14: // Kit of Sega Saturn
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x34;
+					break;
+				case 0x15: // Kit of Dreamcast
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x35;
+					break;
+				case 0x26: // Heart of Kapukapu
+					if (eq_mag != -1)
+						client->character.inventory[eq_mag].item.data[1] = 0x2D;
+					break;
+				case 0x27: // Photon Booster
+					if (eq_wep != -1)
+					{
+						switch (client->character.inventory[eq_wep].item.data[1])
+						{
+						case 0x15:
+							if (client->character.inventory[eq_wep].item.data[3] == 0x09)
+							{
+								client->character.inventory[eq_wep].item.data[2] = 0x01; // Burning Visit
+								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+								client->character.inventory[eq_wep].item.data[4] = 0x00;
+								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							}
+							break;
+						case 0x45:
+							if (client->character.inventory[eq_wep].item.data[3] == 0x09)
+							{
+								client->character.inventory[eq_wep].item.data[2] = 0x01; // Snow Queen
+								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+								client->character.inventory[eq_wep].item.data[4] = 0x00;
+								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							}
+							break;
+						case 0x4E:
+							if (client->character.inventory[eq_wep].item.data[3] == 0x09)
+							{
+								client->character.inventory[eq_wep].item.data[2] = 0x01; // Iron Faust
+								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+								client->character.inventory[eq_wep].item.data[4] = 0x00;
+								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							}
+							break;
+						case 0x6D:
+							if (client->character.inventory[eq_wep].item.data[3] == 0x14)
+							{
+								client->character.inventory[eq_wep].item.data[2] = 0x01; // Power Maser
+								client->character.inventory[eq_wep].item.data[3] = 0x00; // Not grinded
+								client->character.inventory[eq_wep].item.data[4] = 0x00;
+								SendItemToEnd(client->character.inventory[eq_wep].item.itemid, client);
+							}
+							break;
+						}
+					}
+					break;
 
-				if (new_item)
-				{
-					INVENTORY_ITEM add_item;
-
-					memset(&add_item, 0, sizeof(INVENTORY_ITEM));
-					*(unsigned *)&add_item.item.data[0] = new_item;
-					add_item.item.itemid = l->playerItemID[client->clientID];
-					l->playerItemID[client->clientID]++;
-					AddToInventory(&add_item, 1, 0, client);
 				}
+			break;
+		case 0x0F: // Add Slot
+			if ((eq_armor != -1) && (client->character.inventory[eq_armor].item.data[5] < 0x04))
+				client->character.inventory[eq_armor].item.data[5]++;
+			break;
+		case 0x15:
+			new_item = 0;
+			switch (i.item.data[2])
+			{
+			case 0x00:
+				new_item = 0x0D0E03 + ((mt_lrand() % 9) * 0x10000);
 				break;
-			case 0x18: // Ep4 Mag Cells
-				if (eq_mag != -1)
-					client->character.inventory[eq_mag].item.data[1] = 0x42 + (i.item.data[2]);
+			case 0x01:
+				new_item = easter_drops[mt_lrand() % 9];
+				break;
+			case 0x02:
+				new_item = jacko_drops[mt_lrand() % 8];
+				break;
+			default:
 				break;
 			}
+
+			if (new_item)
+			{
+				INVENTORY_ITEM add_item;
+
+				memset(&add_item, 0, sizeof(INVENTORY_ITEM));
+				*(unsigned *)&add_item.item.data[0] = new_item;
+				add_item.item.itemid = l->playerItemID[client->clientID];
+				l->playerItemID[client->clientID]++;
+				AddToInventory(&add_item, 1, 0, client);
+			}
 			break;
-		default:
+		case 0x18: // Ep4 Mag Cells
+			if (eq_mag != -1)
+				client->character.inventory[eq_mag].item.data[1] = 0x42 + (i.item.data[2]);
 			break;
 		}
+		break;
+	default:
+		break;
 	}
+	//}
 }
 
 int check_equip(unsigned char eq_flags, unsigned char cl_flags)
@@ -7592,7 +7271,7 @@ void EquipItem(unsigned itemid, BANANA* client)
 						client->character.inventory[ch].item.data[4] = (unsigned char)(found_slot);
 					}
 					else
-					{
+					{//缺失 Sancaros
 						client->character.inventory[ch].flags &= ~(0x08);
 						Send1A(L"There are no free slots on your armor.  Equip unit failed.", client, 81);
 						client->todc = 1;
@@ -7613,11 +7292,11 @@ void EquipItem(unsigned itemid, BANANA* client)
 			break;
 		}
 	}
-	if (!found_item)
-	{
-		Send1A(L"Could not find item to equip.", client, 82);
-		client->todc = 1;
-	}
+	/*if (!found_item)
+	{//缺失 Sancaros
+	Send1A(L"Could not find item to equip.", client, 82);
+	client->todc = 1;
+	}*/
 }
 
 void DeequipItem(unsigned itemid, BANANA* client)
@@ -7681,11 +7360,11 @@ void DeequipItem(unsigned itemid, BANANA* client)
 			break;
 		}
 	}
-	if (!found_item)
+	/*if (!found_item)
 	{
-		Send1A(L"Could not find item to unequip.", client, 83);
-		client->todc = 1;
-	}
+	Send1A(L"Could not find item to unequip.", client, 83);
+	client->todc = 1;
+	}*/
 }
 
 unsigned GetShopPrice(INVENTORY_ITEM* ci)
@@ -8238,7 +7917,7 @@ void Send60(BANANA* client)
 		if (dont_send_60[(client->decryptbuf[0x08] * 2) + 1] == 1)
 		{
 			dont_send = 1;
-			WriteLog("60 command \"%02x\" blocked in game. (Data below)", client->decryptbuf[0x08]);
+			WriteLog("60 指令 \"%02x\" 被游戏屏蔽了. (数据在下面)", client->decryptbuf[0x08]);
 			packet_to_text(&client->decryptbuf[0x00], size);
 			WriteLog("%s", &dp[0]);
 		}
@@ -8900,10 +8579,10 @@ void Send60(BANANA* client)
 		case 0xCF:
 			if ((l->battle) && (client->mode))
 			{
-				// Battle restarting...
+				// 战斗重新开始...
 				//
-				// If rule #1 we'll copy the character backup to the character array, otherwise
-				// we'll reset the character...
+				// 如果第1条规则 我们将把角色数据备份复制到角色数组, 否则
+				// 我们会重置角色...
 				//
 				for (ch = 0;ch<4;ch++)
 				{
@@ -10505,7 +10184,7 @@ void Send62(BANANA* client)
 		}
 		break;
 	case 0xA6:
-		// Trade (not done yet)
+		// 交易 (还未完成)Sancaros
 		break;
 	case 0xAE:
 		// Chair info
@@ -10513,7 +10192,7 @@ void Send62(BANANA* client)
 			dont_send = 0;
 		break;
 	case 0xB5:
-		// Client requesting shop
+		// Client requesting shop 客户端请求商店
 		if (client->lobbyNum > 0x0F)
 		{
 			if ((l->floor[client->clientID] == 0)
@@ -10529,7 +10208,7 @@ void Send62(BANANA* client)
 			client->todc = 1;
 		break;
 	case 0xB7:
-		// Client buying an item
+		// Client buying an item 客户端购买一个物品
 		if (client->lobbyNum > 0x0F)
 		{
 			if ((l->floor[client->clientID] == 0)
@@ -10809,8 +10488,8 @@ void Send62(BANANA* client)
 		break;
 	case 0xC1:
 	case 0xC2:
-		//case 0xCD:
-		//case 0xCE:
+	case 0xCD: //sancaros
+	case 0xCE: //sancaros
 		if (t < maxt)
 		{
 			// Team invite for C1 & C2, Master Transfer for CD & CE.
@@ -11112,7 +10791,7 @@ void Send62(BANANA* client)
 	default:
 		if (client->lobbyNum > 0x0F)
 		{
-			WriteLog("62 command \"%02x\" not handled in game. (Data below)", client->decryptbuf[0x08]);
+			WriteLog("62 指令 \"%02x\" 未被游戏进行接收处理. (数据如下)", client->decryptbuf[0x08]);
 			packet_to_text(&client->decryptbuf[0x00], size);
 			WriteLog("%s", &dp[0]);
 		}
@@ -14050,105 +13729,105 @@ void BlockProcessPacket(BANANA* client)
 			if (client->lobbyNum < 0x10)
 			{
 				//if (client->decryptbuf[0x52])
-					//挑战模式进入房间
-					//Send1A(L"Challenge games are NOT supported right now.\nCheck back later.\n\n- Sancaros", client, 102);
+				//挑战模式进入房间
+				//Send1A(L"Challenge games are NOT supported right now.\nCheck back later.\n\n- Sancaros", client, 102);
 				//else
 				//{
-					unsigned lNum, failed_to_create;
+				unsigned lNum, failed_to_create;
 
-					failed_to_create = 0;
+				failed_to_create = 0;
 
-					if ((!client->isgm) && (!isLocalGM(client->guildcard)))
+				if ((!client->isgm) && (!isLocalGM(client->guildcard)))
+				{
+					//episode
+					switch (client->decryptbuf[0x53])
 					{
-							//episode
-						switch (client->decryptbuf[0x53])
+					case 0x01:
+						if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 19))
 						{
-						case 0x01:
-							if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 19))
-							{
-								Send01(L"Episode I\n\nYou must be level\n20 or higher\nto play on the\nhard difficulty.", client, 105);
-								failed_to_create = 1;
-							}
-							else
-								if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 49))
-								{
-									Send01(L"Episode I\n\nYou must be level\n50 or higher\nto play on the\nvery hard\ndifficulty.", client, 106);
-									failed_to_create = 1;
-								}
-								else
-									if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 89))
-									{
-										Send01(L"Episode I\n\nYou must be level\n90 or higher\nto play on the\nultimate\ndifficulty.", client, 107);
-										failed_to_create = 1;
-									}
-							break;
-						case 0x02:
-							if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 29))
-							{
-								Send01(L"Episode II\n\nYou must be level\n30 or higher\nto play on the\nhard difficulty.", client, 108);
-								failed_to_create = 1;
-							}
-							else
-								if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 59))
-								{
-									Send01(L"Episode II\n\nYou must be level\n60 or higher\nto play on the\nvery hard\ndifficulty.", client, 109);
-									failed_to_create = 1;
-								}
-								else
-									if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 99))
-									{
-										Send01(L"Episode II\n\nYou must be level\n100 or higher\nto play on the\nultimate\ndifficulty.", client, 110);
-										failed_to_create = 1;
-									}
-							break;
-						case 0x03:
-							if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 39))
-							{
-								Send01(L"Episode IV\n\nYou must be level\n40 or higher\nto play on the\nhard difficulty.", client, 111);
-								failed_to_create = 1;
-							}
-							else
-								if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 69))
-								{
-									Send01(L"Episode IV\n\nYou must be level\n70 or higher\nto play on the\nvery hard\ndifficulty.", client, 112);
-									failed_to_create = 1;
-								}
-								else
-									if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 109))
-									{
-										Send01(L"Episode IV\n\nYou must be level\n110 or higher\nto play on the\nultimate\ndifficulty.", client, 113);
-										failed_to_create = 1;
-									}
-							break;
-						default:
-							SendB0(L"Lol, nub.", client, -1);
-							break;
-						}
-					}
-
-					if (!failed_to_create)
-					{
-						lNum = free_game(client);
-						if (lNum)
-						{
-							removeClientFromLobby(client);
-							client->lobbyNum = (unsigned short)lNum + 1;
-							client->lobby = &blocks[client->block - 1]->lobbies[lNum];
-							initialize_game(client);
-							Send64(client);
-							memset(&client->encryptbuf[0x00], 0, 0x0C);
-							client->encryptbuf[0x00] = 0x0C;
-							client->encryptbuf[0x02] = 0x60;
-							client->encryptbuf[0x08] = 0xDD;
-							client->encryptbuf[0x09] = 0x03;
-							client->encryptbuf[0x0A] = (unsigned char)EXPERIENCE_RATE;
-							cipher_ptr = &client->server_cipher;
-							encryptcopy(client, &client->encryptbuf[0x00], 0x0C);
-							UpdateGameItem(client);
+							Send01(L"Episode I\n\nYou must be level\n20 or higher\nto play on the\nhard difficulty.", client, 105);
+							failed_to_create = 1;
 						}
 						else
-							Send01(L"Sorry, limit of game\ncreation has been\nreached.\n\nPlease join a game\nor change ships.", client, 132);
+							if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 49))
+							{
+								Send01(L"Episode I\n\nYou must be level\n50 or higher\nto play on the\nvery hard\ndifficulty.", client, 106);
+								failed_to_create = 1;
+							}
+							else
+								if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 89))
+								{
+									Send01(L"Episode I\n\nYou must be level\n90 or higher\nto play on the\nultimate\ndifficulty.", client, 107);
+									failed_to_create = 1;
+								}
+						break;
+					case 0x02:
+						if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 29))
+						{
+							Send01(L"Episode II\n\nYou must be level\n30 or higher\nto play on the\nhard difficulty.", client, 108);
+							failed_to_create = 1;
+						}
+						else
+							if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 59))
+							{
+								Send01(L"Episode II\n\nYou must be level\n60 or higher\nto play on the\nvery hard\ndifficulty.", client, 109);
+								failed_to_create = 1;
+							}
+							else
+								if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 99))
+								{
+									Send01(L"Episode II\n\nYou must be level\n100 or higher\nto play on the\nultimate\ndifficulty.", client, 110);
+									failed_to_create = 1;
+								}
+						break;
+					case 0x03:
+						if ((client->decryptbuf[0x50] == 0x01) && (client->character.level < 39))
+						{
+							Send01(L"Episode IV\n\nYou must be level\n40 or higher\nto play on the\nhard difficulty.", client, 111);
+							failed_to_create = 1;
+						}
+						else
+							if ((client->decryptbuf[0x50] == 0x02) && (client->character.level < 69))
+							{
+								Send01(L"Episode IV\n\nYou must be level\n70 or higher\nto play on the\nvery hard\ndifficulty.", client, 112);
+								failed_to_create = 1;
+							}
+							else
+								if ((client->decryptbuf[0x50] == 0x03) && (client->character.level < 109))
+								{
+									Send01(L"Episode IV\n\nYou must be level\n110 or higher\nto play on the\nultimate\ndifficulty.", client, 113);
+									failed_to_create = 1;
+								}
+						break;
+					default:
+						SendB0(L"Lol, nub.", client, -1);
+						break;
 					}
+				}
+
+				if (!failed_to_create)
+				{
+					lNum = free_game(client);
+					if (lNum)
+					{
+						removeClientFromLobby(client);
+						client->lobbyNum = (unsigned short)lNum + 1;
+						client->lobby = &blocks[client->block - 1]->lobbies[lNum];
+						initialize_game(client);
+						Send64(client);
+						memset(&client->encryptbuf[0x00], 0, 0x0C);
+						client->encryptbuf[0x00] = 0x0C;
+						client->encryptbuf[0x02] = 0x60;
+						client->encryptbuf[0x08] = 0xDD;
+						client->encryptbuf[0x09] = 0x03;
+						client->encryptbuf[0x0A] = (unsigned char)EXPERIENCE_RATE;
+						cipher_ptr = &client->server_cipher;
+						encryptcopy(client, &client->encryptbuf[0x00], 0x0C);
+						UpdateGameItem(client);
+					}
+					else
+						Send01(L"Sorry, limit of game\ncreation has been\nreached.\n\nPlease join a game\nor change ships.", client, 132);
+				}
 				//}
 			}
 			break;
@@ -14991,7 +14670,7 @@ void LoadTechParam()
 	LoadCSV("param\\tech.ini");
 	if (csv_lines != 19)
 	{
-		printf("科技 CSV 文件已损坏.\n");
+		printf("科技 tech.ini 文件CSV内容已损坏.\n");
 		printf("按下 [回车键] 退出");
 		gets_s(&dp[0], 0);
 		exit(1);
@@ -15004,7 +14683,7 @@ void LoadTechParam()
 				max_tech_level[ch][ch2] = ((char)atoi(csv_params[ch][ch2 + 1])) - 1;
 			else
 			{
-				printf("科技 CSV 文件已损坏.\n");
+				printf("科技 tech.ini 文件CSV内容已损坏.\n");
 				printf("按下 [回车键] 退出");
 				gets_s(&dp[0], 0);
 				exit(1);
@@ -15104,10 +14783,12 @@ int main()
 	strcat(&dp[0], "Tethealla 舰船服务器 版本 ");
 	strcat(&dp[0], SERVER_VERSION);
 	strcat(&dp[0], " 作者 Sodaboy 编译 Sancaros");
+	strcat(&dp[0], " 当前舰船");
+	strcat(&dp[0], Ship_Name, "名称代码未完成");//缺失 Sancaros
 	SetConsoleTitle(&dp[0]);
 
 	printf("\n特提塞拉 舰船服务器 版本 %s  版权作者 (C) 2008  Terry Chatman Jr.\n", SERVER_VERSION);
-	printf("\n编辑 Sancaros. 2020.12\n");
+	printf("\n编译 Sancaros. 2020.12\n");
 	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 	printf("这个程序绝对没有保证: 详情参见说明\n");
 	printf("请参阅GPL-3.0.TXT中的第15节\n");
@@ -16040,7 +15721,7 @@ int main()
 							serverConnectionList[serverNumConnections++] = ch;
 							memcpy(&workConnect->IP_Address[0], inet_ntoa(listen_in.sin_addr), 16);
 							*(unsigned *)&workConnect->ipaddr = *(unsigned *)&listen_in.sin_addr;
-							printf("舰舱已收到来自 %s:%u 的登船请求\n", workConnect->IP_Address, listen_in.sin_port);
+							printf("舰舱收到来自 %s:%u 的登船请求\n", workConnect->IP_Address, listen_in.sin_port);
 							printf("玩家统计: %u\n", serverNumConnections);
 
 							if ((fp = fopen("playerCount.txt", "w")) == NULL)
@@ -16081,7 +15762,7 @@ int main()
 								workConnect->connection_index = ch2;
 								serverConnectionList[serverNumConnections++] = ch2;
 								memcpy(&workConnect->IP_Address[0], inet_ntoa(listen_in.sin_addr), 16);
-								printf("舰舱已接收来自 %s:%u 的登船\n", inet_ntoa(listen_in.sin_addr), listen_in.sin_port);
+								printf("舰舱已接收来自 %s:%u 的登船请求\n", inet_ntoa(listen_in.sin_addr), listen_in.sin_port);
 								*(unsigned *)&workConnect->ipaddr = *(unsigned *)&listen_in.sin_addr;
 								printf("玩家统计: %u\n", serverNumConnections);
 								ShipSend0E(logon);

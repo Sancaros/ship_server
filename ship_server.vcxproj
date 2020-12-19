@@ -63,7 +63,6 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
@@ -105,10 +104,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="def_block.h" />
+    <ClInclude Include="def_functions.h" />
     <ClInclude Include="def_map.h" />
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
     <ClInclude Include="def_tables.h" />
+    <ClInclude Include="funcs_cBLOCKpacket.h" />
+    <ClInclude Include="funcs_connect.h" />
+    <ClInclude Include="funcs_files.h" />
+    <ClInclude Include="funcs_mag.h" />
+    <ClInclude Include="funcs_mapdata.h" />
+    <ClInclude Include="funcs_send.h" />
+    <ClInclude Include="funcs_ship2login.h" />
+    <ClInclude Include="funcs_string.h" />
     <ClInclude Include="localgms.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
