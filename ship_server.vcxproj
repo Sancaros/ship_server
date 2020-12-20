@@ -110,22 +110,8 @@
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
     <ClInclude Include="def_tables.h" />
-    <ClInclude Include="broadcast.h" />
-    <ClInclude Include="cBLOCKpacket.h" />
-    <ClInclude Include="command.h" />
-    <ClInclude Include="connect.h" />
-    <ClInclude Include="files.h" />
-    <ClInclude Include="item.h" />
-    <ClInclude Include="loadfile.h" />
-    <ClInclude Include="mag.h" />
-    <ClInclude Include="mapdata.h" />
-    <ClInclude Include="quest.h" />
-    <ClInclude Include="send.h" />
-    <ClInclude Include="logon.h" />
-    <ClInclude Include="string.h" />
+    <ClInclude Include="ship_server.h" />
     <ClInclude Include="localgms.h" />
-    <ClInclude Include="log.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
