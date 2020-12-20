@@ -60,7 +60,22 @@
     <ClInclude Include="funcs_send.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="funcs_ship2login.h">
+    <ClInclude Include="funcs_logon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcs_quest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcs_broadcast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcs_item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcs_command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

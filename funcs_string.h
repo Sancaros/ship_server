@@ -174,7 +174,6 @@ void convertMask(char* IPData, unsigned IPLen, unsigned short* IPStore)
 	}
 }
 
-
 unsigned char hexToByte(char* hs)
 {
 	unsigned b;

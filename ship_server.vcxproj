@@ -74,6 +74,7 @@
       <SubSystem>Console</SubSystem>
       <LinkTimeCodeGeneration />
       <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,16 +110,21 @@
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
     <ClInclude Include="def_tables.h" />
+    <ClInclude Include="funcs_broadcast.h" />
     <ClInclude Include="funcs_cBLOCKpacket.h" />
+    <ClInclude Include="funcs_command.h" />
     <ClInclude Include="funcs_connect.h" />
     <ClInclude Include="funcs_files.h" />
+    <ClInclude Include="funcs_item.h" />
     <ClInclude Include="funcs_mag.h" />
     <ClInclude Include="funcs_mapdata.h" />
+    <ClInclude Include="funcs_quest.h" />
     <ClInclude Include="funcs_send.h" />
-    <ClInclude Include="funcs_ship2login.h" />
+    <ClInclude Include="funcs_logon.h" />
     <ClInclude Include="funcs_string.h" />
     <ClInclude Include="localgms.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ship.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ship_server.rc" />

@@ -156,6 +156,40 @@ void load_config_file()
 				switch (config_index)
 				{
 				case 0x00:
+					// Login server host name or IP
+				{
+					unsigned p;
+					unsigned alpha;
+					alpha = 0;
+					for (p = 0;p<ch;p++)
+						if (((config_data[p] >= 65) && (config_data[p] <= 90)) ||
+							((config_data[p] >= 97) && (config_data[p] <= 122)))
+						{
+							alpha = 1;
+							break;
+						}
+					if (alpha)
+					{
+						struct hostent *IP_host;
+						//这里域名竟然-1,待解决
+						//config_data[strlen(&config_data[0]) - 1] = 0x00;
+						config_data[strlen(&config_data[0])] = 0x00;
+						printf("解析中 %s ...\n", (char*)&config_data[0]);
+						IP_host = gethostbyname(&config_data[0]);
+						if (!IP_host)
+						{
+							printf("无法解析该域名.");
+							printf("按下 [回车键] 退出");
+							gets_s(&dp[0], 0);
+							exit(1);
+						}
+						*(unsigned *)&serverIP[0] = *(unsigned *)IP_host->h_addr;
+					}
+					else
+						convertIPString(&config_data[0], ch + 1, 1, &serverIP[0]);
+				}
+				break;
+				/*case 0x00:
 					// Server IP address
 				{
 					if ((config_data[0] == 0x41) || (config_data[0] == 0x61))
@@ -167,7 +201,7 @@ void load_config_file()
 						convertIPString(&config_data[0], ch + 1, 1, &serverIP[0]);
 					}
 				}
-				break;
+				break;*/
 				case 0x01:
 					// Server Listen Port
 					serverPort = atoi(&config_data[0]);
@@ -217,7 +251,8 @@ void load_config_file()
 					{
 						struct hostent *IP_host;
 						//这里域名竟然-1,待解决
-						config_data[strlen(&config_data[0]) - 1] = 0x00;
+						//config_data[strlen(&config_data[0]) - 1] = 0x00;
+						config_data[strlen(&config_data[0])] = 0x00;
 						printf("解析中 %s ...\n", (char*)&config_data[0]);
 						IP_host = gethostbyname(&config_data[0]);
 						if (!IP_host)

@@ -148,7 +148,7 @@ void SendToLobby(LOBBY* l, unsigned max_send, unsigned char* src, unsigned short
 	}
 }
 
-//缺少房间类型判断
+
 void removeClientFromLobby(BANANA* client)
 {
 	unsigned ch, maxch, lowestID;
