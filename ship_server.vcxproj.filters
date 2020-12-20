@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="功能文件">
-      <UniqueIdentifier>{ad265a62-6e00-49af-9ecb-6904bf4d7e2a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -15,6 +12,9 @@
     <Filter Include="资源文件">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="废弃文件">
+      <UniqueIdentifier>{ad265a62-6e00-49af-9ecb-6904bf4d7e2a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,46 +46,46 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="log.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="command.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="connect.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="files.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="item.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="loadfile.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="cBLOCKpacket.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="broadcast.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="logon.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="mag.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="mapdata.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="quest.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="send.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
-      <Filter>功能文件</Filter>
+      <Filter>废弃文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
