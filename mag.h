@@ -725,7 +725,7 @@ void FeedMag(unsigned magid, unsigned itemid, BANANA* client)
 	//ȱʧ Sancaros
 	if ((found_mag == -1) || (found_item == -1))
 	{
-		//Send1A(L"Could not find mag to feed or item to feed said mag.", client, 76);
+		//Send1A("Could not find mag to feed or item to feed said mag.", client, 76);
 		//client->todc = 1;
 	}
 	else

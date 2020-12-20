@@ -775,3 +775,32 @@ void ShipSend0B(BANANA* client, ORANGE* ship)
 	*(long long *)&ship->encryptbuf[0x2A] = *(long long*)&client->decryptbuf[0xAC];
 	compressShipPacket(ship, &ship->encryptbuf[0x00], 0x32);
 }
+
+void Send01(const wchar_t *text, BANANA* client, int line)
+{
+	if (line>-1 && strlen(languageMessages[client->character.lang][line]))
+	{
+		text = languageMessages[client->character.lang][line];
+	}
+	unsigned short mesgOfs = 0x10;
+	unsigned ch;
+
+	memset(&PacketData[0], 0, 16);
+	PacketData[mesgOfs++] = 0x09;
+	PacketData[mesgOfs++] = 0x00;
+	PacketData[mesgOfs++] = 0x45;
+	PacketData[mesgOfs++] = 0x00;
+	for (ch = 0;ch<strlen(text);ch++)
+	{
+		PacketData[mesgOfs++] = text[ch];
+		PacketData[mesgOfs++] = 0x00;
+	}
+	PacketData[mesgOfs++] = 0x00;
+	PacketData[mesgOfs++] = 0x00;
+	while (mesgOfs % 8)
+		PacketData[mesgOfs++] = 0x00;
+	*(unsigned short*)&PacketData[0] = mesgOfs;
+	PacketData[0x02] = 0x01;
+	cipher_ptr = &client->server_cipher;
+	encryptcopy(client, &PacketData[0], mesgOfs);
+}

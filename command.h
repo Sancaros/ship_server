@@ -1,5 +1,6 @@
 /* 指令相关代码
 */
+char character_file[255];
 unsigned char chatBuf[4000];
 unsigned char cmdBuf[4000];
 char* myCommand;
@@ -2073,9 +2074,7 @@ void CommandD9(BANANA* client)
 }
 
 
-void AddGuildCard(unsigned myGC, unsigned friendGC, unsigned char* friendName,
-	unsigned char* friendText, unsigned char friendSecID, unsigned char friendClass,
-	ORANGE* ship)
+void AddGuildCard(unsigned myGC, unsigned friendGC, unsigned char* friendName, unsigned char* friendText, unsigned char friendSecID, unsigned char friendClass, ORANGE* ship)
 {
 	// Instruct the logon server to add the guild card
 

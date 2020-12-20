@@ -21,7 +21,7 @@ void ConstructBlockPacket()
 	else
 		_itoa(serverID, &tempName[0], 10);
 	strcat(&tempName[0], ":");
-	strcat(&tempName[0], &Ship_Name[0]);
+	strcat(&tempName[0], (unsigned char*) &Ship_Name[0]);
 	Packet07Data[0x32] = 0x08;
 	Offset = 0x12;
 	tn = &tempName[0];
