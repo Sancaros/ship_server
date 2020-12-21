@@ -105,7 +105,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="def_block.h" />
-    <ClInclude Include="def_functions.h" />
     <ClInclude Include="def_map.h" />
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
