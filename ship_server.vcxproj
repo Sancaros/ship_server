@@ -106,12 +106,15 @@
   <ItemGroup>
     <ClInclude Include="bbtable.h" />
     <ClInclude Include="DEBUG.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="def_block.h" />
     <ClInclude Include="def_map.h" />
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
     <ClInclude Include="def_tables.h" />
+    <ClInclude Include="functions.h" />
     <ClInclude Include="pso_crypt.h" />
+    <ClInclude Include="send60.h" />
     <ClInclude Include="ship_server.h" />
     <ClInclude Include="localgms.h" />
     <ClInclude Include="resource.h" />

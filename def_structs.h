@@ -223,9 +223,10 @@ typedef struct st_chardata {
 	unsigned short EVP; // 0x358-0x359
 	unsigned short HP; // 0x35A-0x35B
 	unsigned short DFP; // 0x35C-0x35D
-	unsigned short ATA; // 0x35E-0x35F
+	unsigned short TP; // 0x35E-0x35F
 	unsigned short LCK; // 0x360-0x361
-	unsigned char unknown[10]; // 0x362-0x36B
+	unsigned short ATA; // 0x362-0x363
+	unsigned char unknown[8]; // 0x364-0x36B  (Offset 0x360 has 0x0A value on Schthack's...)
 	unsigned short level; // 0x36C-0x36D;
 	unsigned short unknown2; // 0x36E-0x36F;
 	unsigned XP; // 0x370-0x373

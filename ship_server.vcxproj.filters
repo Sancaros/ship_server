@@ -51,6 +51,15 @@
     <ClInclude Include="DEBUG.h">
       <Filter>功能文件</Filter>
     </ClInclude>
+    <ClInclude Include="send60.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
+    <ClInclude Include="functions.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ship_server.rc">
