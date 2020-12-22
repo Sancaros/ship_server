@@ -42,6 +42,15 @@
     <ClInclude Include="ship_server.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="pso_crypt.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bbtable.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DEBUG.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ship_server.rc">
@@ -51,6 +60,9 @@
   <ItemGroup>
     <ClCompile Include="ship_server.c">
       <Filter>资源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="prs.cpp">
+      <Filter>功能文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

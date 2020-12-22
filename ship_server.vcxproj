@@ -104,11 +104,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="bbtable.h" />
+    <ClInclude Include="DEBUG.h" />
     <ClInclude Include="def_block.h" />
     <ClInclude Include="def_map.h" />
     <ClInclude Include="def_packets.h" />
     <ClInclude Include="def_structs.h" />
     <ClInclude Include="def_tables.h" />
+    <ClInclude Include="pso_crypt.h" />
     <ClInclude Include="ship_server.h" />
     <ClInclude Include="localgms.h" />
     <ClInclude Include="resource.h" />
@@ -117,6 +120,7 @@
     <ResourceCompile Include="ship_server.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="prs.cpp" />
     <ClCompile Include="ship_server.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
