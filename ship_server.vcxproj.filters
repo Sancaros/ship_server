@@ -60,6 +60,9 @@
     <ClInclude Include="functions.h">
       <Filter>功能文件</Filter>
     </ClInclude>
+    <ClInclude Include="对照.h">
+      <Filter>功能文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ship_server.rc">
