@@ -1,6 +1,6 @@
 #pragma once
-#define SERVER_VERSION "0.148"
-#define SHIP_NAME "未完成" //用于服务器窗口显示舰船名称
+#define SERVER_VERSION L"0.148"
+#define SHIP_NAME L"未完成识别代码"//用于服务器窗口显示舰船名称
 #define USEADDR_ANY
 #define LOGON_PORT 3455 //Nova更新的代码 用于log12.22
 #define TCP_BUFFER_SIZE 64000

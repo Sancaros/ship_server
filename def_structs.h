@@ -281,7 +281,8 @@ typedef struct st_chardata { //16进制 10进制
 	unsigned guildCard; // 0x19C8-0x19CB; 6600 - 6603
 						// Stored from E8 06 packet.
 	unsigned char name2[24]; // 0x19CC - 0x19E3; 6604 - 6627
-	unsigned char unknown9[232]; // 0x19E4-0x1ACB; 6628 - 6859
+	unsigned char unknown9[56]; // 0x19E4-0x1ACB; 6628 - 6859
+	unsigned char guildcard_text[176]; // 0x1A1C - 0x1ACB
 	unsigned char reserved1;  // 0x1ACC; 6860 // Has value 0x01 on Schthack's
 	unsigned char reserved2; // 0x1ACD; 6861 // Has value 0x01 on Schthack's
 	unsigned char sectionID2; // 0x1ACE; 6862
@@ -291,7 +292,7 @@ typedef struct st_chardata { //16进制 10进制
 									  // Stored from ED 02 packet.
 	unsigned char shortcuts[2624]; // 0x1FB4 - 0x29F3 8116 - 10739
 								   // Stored from ED 03 packet.
-	unsigned char autoreply[344]; // 0x29F4 - 0x2B4B; 10740 - 11083
+	unsigned char autoReply[344]; // 0x29F4 - 0x2B4B; 10740 - 11083
 	unsigned char GCBoard[172]; // 0x2B4C - 0x2BF7; 11084 - 11255
 	unsigned char unknown12[200]; // 0x2BF8 - 0x2CBF; 11256 - 11455
 	unsigned char challengeData[320]; // 0x2CC0 - 0x2DFF 11456 - 11775
