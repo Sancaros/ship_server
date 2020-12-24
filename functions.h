@@ -8,7 +8,8 @@ void WriteLog(char *fmt, ...);
 void WriteGM(char *fmt, ...);
 void ShipSend04(unsigned char command, BANANA* client, ORANGE* ship);
 void ShipSend0E(ORANGE* ship);
-void Send01(const char *text, BANANA* client, int line); //12.22
+
+void Send01(wchar_t *text, BANANA* client, int line); //12.22//void Send01(const wchar_t *text, BANANA* client, int line); //12.22
 void ShowArrows(BANANA* client, int to_all);
 unsigned char* MakePacketEA15(BANANA* client);
 void SendToLobby(LOBBY* l, unsigned max_send, unsigned char* src, unsigned short size, unsigned nosend);
