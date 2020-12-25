@@ -43,7 +43,7 @@ unsigned ep4_rtremap[] =
 };
 
 
-// Units dropped per difficulty (24 definitions per level)
+// Units dropped per difficulty (24 definitions per level)每难度下降单位 (每级24个定义)
 
 unsigned char elemental_table[] = 
 {
@@ -1041,7 +1041,7 @@ int tool_prices[] =
 	0x021003, 3000
 };
 
-// Item list for Good Luck quest...
+// Item list for Good Luck quest...祝你好运任务的物品清单
 
 unsigned good_luck[] =
 {

@@ -1,4 +1,4 @@
-#pragma once
+/* function defintions 功能定义 */
 extern void	mt_bestseed(void);
 extern void	mt_seed(void);	/* Choose seed from random input 从随机输入中选择种子. */
 extern unsigned long mt_lrand(void);	/* Generate 32-bit random value  生成32位随机值  */

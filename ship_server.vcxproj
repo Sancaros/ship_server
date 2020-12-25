@@ -119,6 +119,7 @@
     <ClInclude Include="localgms.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="unicodetrans.h" />
+    <ClInclude Include="variables.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ship_server.rc" />
