@@ -226,7 +226,7 @@ typedef struct st_chardata { //16进制 10进制
 	//unsigned char unknown[10]; // 0x362-0x36B 866 - 867
 
 
-	unsigned char unknown[10]; // 0x362-0x36B 866 - 875
+	unsigned char option_flags[10]; // 0x362-0x36B 866 - 875
 
 	//unsigned short TP; // 0x35E-0x35F 862 - 863
 	//unsigned short LCK; // 0x360-0x361 864 - 865
@@ -287,7 +287,11 @@ typedef struct st_chardata { //16进制 10进制
 	unsigned char reserved2; // 0x1ACD; 6861 // Has value 0x01 on Schthack's
 	unsigned char sectionID2; // 0x1ACE; 6862
 	unsigned char _class2; // 0x1ACF; 6863
+
+
 	unsigned char unknown10[4]; // 0x1AD0-0x1AD3; 6864 - 6867
+
+
 	unsigned char symbol_chats[1248]; // 0x1AD4 - 0x1FB3 6868 - 8115
 									  // Stored from ED 02 packet.
 	unsigned char shortcuts[2624]; // 0x1FB4 - 0x29F3 8116 - 10739
@@ -299,8 +303,8 @@ typedef struct st_chardata { //16进制 10进制
 
 									  //unsigned char unknown13[172]; // 0x2E00 - 0x2EAB; 11776 - 11947 分解为三种数据
 	unsigned char techConfig[40]; // 0x2E00 - 0x2E27 11776 - 11815
-	unsigned char unknown13[40]; // 0x2E28-0x2E4F 11816 - 11859
-	unsigned char quest_data2[92]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
+	unsigned char unknown13[44]; // 0x2E28-0x2E4F 11816 - 11859
+	unsigned char battleData[88]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
 	//unsigned char unknown13[44]; // 0x2E28-0x2E53 11816 - 11860
 	//unsigned char quest_data2[88]; // 0x2E55 - 0x2EAB (Quest data 2 任务数据2) 11861 - 11947
 
@@ -308,7 +312,19 @@ typedef struct st_chardata { //16进制 10进制
 								  // I don't know what this is, but split from unknown13 because this chunk is
 								  // actually copied into the 0xE2 packet during login @ 0x08 
 								  //我不知道这是什么，但是从unknown13开始拆分，因为这个块实际上是在登录期间复制到0xE2包中的 
-
+	/*S服务端中的关于 276字节的定义
+	uint8_t unk1[0x0114];
+	struct {
+		uint32_t guildcard;
+		uint16_t name[0x18]; //24
+		uint16_t team[0x10]; //16
+		uint16_t desc[0x58]; //88
+		uint8_t reserved1;
+		uint8_t language;
+		uint8_t section;
+		uint8_t ch_class;
+	} blocked[29];
+	*/
 	unsigned char keyConfigGlobal[364]; // 0x2FC0 - 0x312B  12224 - 12587
 										// Copied into 0xE2 login packet @ 0x11C 复制到0xE2登录包@0x11C 
 										// Stored from ED 04 packet.
@@ -317,7 +333,7 @@ typedef struct st_chardata { //16进制 10进制
 									   // Copied into 0xE2 login packet @ 0x288
 									   // Stored from ED 05 packet.
 
-	unsigned guildCard2; // 0x3164 - 0x3167 12644 - 12647
+	unsigned serial_number; // 0x3164 - 0x3167 12644 - 12647
 						 //(From here on copied into 0xE2 login packet @ 0x2C0...)
 
 	unsigned teamID; // 0x3168 - 0x316B 12648 - 12651
@@ -440,9 +456,9 @@ typedef struct st_banana {
 	unsigned char rcvbuf[TCP_BUFFER_SIZE];
 	unsigned short rcvread;
 	unsigned short expect;
-	unsigned char decryptbuf[TCP_BUFFER_SIZE]; // Used when decrypting packets from the client...
+	unsigned char decryptbuf[TCP_BUFFER_SIZE]; // Used when decrypting packets from the client...从客户端解密数据包时使用
 	unsigned char sndbuf[TCP_BUFFER_SIZE];
-	unsigned char encryptbuf[TCP_BUFFER_SIZE]; // Used when making packets to send to the client...
+	unsigned char encryptbuf[TCP_BUFFER_SIZE]; // Used when making packets to send to the client...在制作要发送给客户端的数据包时使用
 	unsigned char packet[TCP_BUFFER_SIZE];
 	int snddata,
 		sndwritten;
