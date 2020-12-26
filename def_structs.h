@@ -302,10 +302,10 @@ typedef struct NO_ALIGN st_chardata {
 								  // actually copied into the 0xE2 packet during login @ 0x08 
 								  //我不知道这是什么，但是从unknown13开始拆分，因为这个块实际上是在登录期间复制到0xE2包中的 
 	unsigned char unknown14[276]; // 0x2EAC - 0x2FBF; 11948 - 12223 暂时未知 但是在newserv中归纳为公会的结构
-	unsigned char keyConfigGlobal[364]; // 0x2FC0 - 0x312B  12224 - 12587 游戏键位设置
+	unsigned char keyConfigGlobal[364]; // 0x2FC0 - 0x312B  12224 - 12587 游戏键位设置 key_data 数据库
 										// Copied into 0xE2 login packet @ 0x11C 复制到0xE2登录包@0x11C 
 										// Stored from ED 04 packet.
-	unsigned char joyConfigGlobal[56]; // 0x312C - 0x3163 12588 - 12643 手柄设置
+	unsigned char joyConfigGlobal[56]; // 0x312C - 0x3163 12588 - 12643 手柄设置 key_data 数据库
 									   // Copied into 0xE2 login packet @ 0x288 复制进0xE2登陆数据中
 									   // Stored from ED 05 packet.从ED 05数据包收集
 	unsigned serial_number; // 0x3164 - 0x3167 12644 - 12647 4 整数 通常给予一个序列号 唯一

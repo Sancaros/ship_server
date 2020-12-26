@@ -1,4 +1,14 @@
-#pragma once
+
+#define reveal_window \
+	ShowWindow ( consoleHwnd, SW_NORMAL ); \
+	SetForegroundWindow ( consoleHwnd ); \
+	SetFocus ( consoleHwnd )
+
+#define swapendian(x) ( ( x & 0xFF ) << 8 ) + ( x >> 8 )
+#define FLOAT_PRECISION 0.00001
+
+
+
 #define SERVER_VERSION L"0.148"
 #define SHIP_NAME L"未完成识别代码"//用于服务器窗口显示舰船名称
 #define USEADDR_ANY
