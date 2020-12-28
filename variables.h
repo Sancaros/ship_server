@@ -5,29 +5,31 @@ struct timeval select_timeout = {
 };
 
 FILE* debugfile;
-unsigned global_rare_mult = 1; //Nova更新的代码 //12.22
-							   // Random drop rates 随机掉落几率
-unsigned rare_box_mult; //Nova更新的代码 //12.22
-unsigned rare_mob_drop_mult; //Nova更新的代码 //12.22
-unsigned WEAPON_DROP_RATE,
-ARMOR_DROP_RATE,
-MAG_DROP_RATE,
-TOOL_DROP_RATE,
-MESETA_DROP_RATE,
-EXPERIENCE_RATE;
+unsigned global_rare_mult = 1;
+
+// Random drop rates
+
+unsigned 	rare_box_mult;
+unsigned	rare_mob_drop_mult;
+unsigned 	WEAPON_DROP_RATE,
+			ARMOR_DROP_RATE,
+			MAG_DROP_RATE,
+			TOOL_DROP_RATE,
+			MESETA_DROP_RATE,
+			EXPERIENCE_RATE;
 unsigned common_rates[5] = { 0 };
 
-// Rare monster appearance rates 稀有怪物出现几率
+// Rare monster appearance rates
 
-unsigned rare_mob_mult; //Nova更新的代码 //12.22
-unsigned hildebear_rate,
-rappy_rate,
-lily_rate,
-slime_rate,
-merissa_rate,
-pazuzu_rate,
-dorphon_rate,
-kondrieu_rate = 0;
+unsigned	rare_mob_mult;
+unsigned	hildebear_rate, 
+			rappy_rate,
+			lily_rate,
+			slime_rate,
+			merissa_rate,
+			pazuzu_rate,
+			dorphon_rate,
+			kondrieu_rate = 0;
 
 unsigned common_counters[5] = { 0 };
 

@@ -181,6 +181,17 @@ typedef struct NO_ALIGN st_bank {
 } BANK;
 
 
+
+typedef struct NO_ALIGN st_challenge_data {
+	//typedef struct st_bank {
+	unsigned char challengeData[320];
+} CHALLENGEDATA;
+
+typedef struct NO_ALIGN st_battle_data {
+	unsigned char battleData[320];
+} BATTLEDATA;
+
+
 /* Item Structure (Includes Flags) 物品结构*/
 
 typedef struct NO_ALIGN st_inventory_item {
@@ -388,6 +399,8 @@ typedef struct st_banana {
 	int bankAccess;
 	BANK common_bank;
 	BANK char_bank;
+	CHALLENGEDATA challenge_data;
+	BATTLEDATA battle_data;
 	void* lobby;
 	int announce;
 	int debugged;
@@ -443,14 +456,14 @@ struct rc4_key {
 typedef struct st_orange {
 	int sockfd;
 	struct in_addr _ip;
-	unsigned char rcvbuf[TCP_BUFFER_SIZE];
+	unsigned char rcvbuf [TCP_BUFFER_SIZE];
 	unsigned long rcvread;
 	unsigned long expect;
-	unsigned char decryptbuf[TCP_BUFFER_SIZE];
-	unsigned char sndbuf[PACKET_BUFFER_SIZE];
-	unsigned char encryptbuf[TCP_BUFFER_SIZE];
+	unsigned char decryptbuf [TCP_BUFFER_SIZE];
+	unsigned char sndbuf [PACKET_BUFFER_SIZE];
+	unsigned char encryptbuf [TCP_BUFFER_SIZE];
 	int snddata, sndwritten;
-	unsigned char packet[PACKET_BUFFER_SIZE];
+	unsigned char packet [PACKET_BUFFER_SIZE];
 	unsigned long packetdata;
 	unsigned long packetread;
 	int crypt_on;
