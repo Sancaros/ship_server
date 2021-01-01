@@ -188,7 +188,7 @@ typedef struct NO_ALIGN st_challenge_data {
 } CHALLENGEDATA;
 
 typedef struct NO_ALIGN st_battle_data {
-	unsigned char battleData[320];
+	unsigned char battleData[88];
 } BATTLEDATA;
 
 
@@ -269,21 +269,16 @@ typedef struct NO_ALIGN st_chardata {
 								  // Stored from ED 07 packet.  从ED 07包中存储。 
 	unsigned char techniques[20]; // 0x4D0 - 0x4E3; 1232 - 1251 20整数
 	unsigned char name3[16]; // 0x4E4 - 0x4F3; 1252 - 1267 16整数 名称3
-							 //unsigned char unknown7[16]; // 0x4E4 - 0x4F3; 1252 - 1267
 	unsigned char options[4]; // 0x4F4-0x4F7; 1268 - 1271 4 整数 //构建选项？
 							  // Stored from ED 01 packet.
-							  //unsigned reserved4; // not sure  0x4F8 - 0x4FB 1272 - 1275 4 整数 和商店的有关
-	unsigned char quest_data1[520]; // 0x4FC - 0x6FF; 1276 - 1791 512 整数 任务 1 数据
-									//unsigned reserved4; // not sure  0x4F8 - 0x4FB 1272 - 1275 4 整数
-									//unsigned char quest_data1[512]; // 0x4FC - 0x6FB; 1276 - 1787 512 整数 任务 1 数据
-									//unsigned reserved5; // 0x6FC - 0x6FF 1788 - 1791 4 整数 应该就是缺少的quest_data1的8个字节吧
+	unsigned char quest_data1[520]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
 									// 银行仓库相关
 	unsigned bankUse; // 0x700 - 0x703 1792 - 1795 4 整数
 	unsigned bankMeseta; // 0x704 - 0x707; 1796 - 1799 4 整数
 	BANK_ITEM bankInventory[200]; // 0x708 - 0x19C7 1800 - 6599 200 整数
+	unsigned guildCard; // 0x19C8-0x19CB; 6600 - 6603 4 整数
 								  //名片相关的
 								  // Stored from E8 06 packet.
-	unsigned guildCard; // 0x19C8-0x19CB; 6600 - 6603 4 整数
 	unsigned char friendName[24]; // 0x19CC - 0x19E3; 6604 - 6627 24 整数
 	unsigned char unknown9[56]; // 0x19E4-0x1A1B; 6628 - 6683 56 整数
 	unsigned char friendText[176]; // 0x1A1C - 0x1ACB 6684 - 6859 176 整数
@@ -303,12 +298,10 @@ typedef struct NO_ALIGN st_chardata {
 									  //unsigned char unknown13[172]; 
 									  // 0x2E00 - 0x2EAB; 11776 - 11947 分解为三种数据
 	unsigned char techConfig[40]; // 0x2E00 - 0x2E27 11776 - 11815 40 整数 魔法设置
-	unsigned char unknown13[40]; // 0x2E28-0x2E4F 11816 - 11859
-	unsigned char battleData[92]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
-								  //unsigned char unknown13[44]; 
-								  // 0x2E28-0x2E53 11816 - 11860
-								  //unsigned char quest_data2[88]; 
-								  // 0x2E55 - 0x2EAB (Quest data 2 任务数据2) 11861 - 11947
+	//unsigned char unknown13[40]; // 0x2E28-0x2E4F 11816 - 11855 40 整数 未知
+	//unsigned char battleData[92]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
+	unsigned char unknown13[44]; // 0x2E28-0x2E53 11816 - 11859
+	unsigned char battleData[88];// 0x2E54 - 0x2EAB (Quest data 2 任务数据2) 11860 - 11947
 								  // I don't know what this is, but split from unknown13 because this chunk is
 								  // actually copied into the 0xE2 packet during login @ 0x08 
 								  //我不知道这是什么，但是从unknown13开始拆分，因为这个块实际上是在登录期间复制到0xE2包中的 
