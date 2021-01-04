@@ -273,9 +273,11 @@ typedef struct NO_ALIGN st_chardata {
 							  // Stored from ED 01 packet.
 	unsigned char quest_data1[520]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
 									// 银行仓库相关
+
 	unsigned bankUse; // 0x700 - 0x703 1792 - 1795 4 整数
 	unsigned bankMeseta; // 0x704 - 0x707; 1796 - 1799 4 整数
 	BANK_ITEM bankInventory[200]; // 0x708 - 0x19C7 1800 - 6599 200 整数
+
 	unsigned guildCard; // 0x19C8-0x19CB; 6600 - 6603 4 整数
 								  //名片相关的
 								  // Stored from E8 06 packet.
@@ -294,6 +296,7 @@ typedef struct NO_ALIGN st_chardata {
 	unsigned char autoReply[344]; // 0x29F4 - 0x2B4B; 10740 - 11083 344 整数
 	unsigned char GCBoard[172]; // 0x2B4C - 0x2BF7; 11084 - 11255 172 整数
 	unsigned char unknown12[200]; // 0x2BF8 - 0x2CBF; 11256 - 11455 200 整数
+
 	unsigned char challengeData[320]; // 0x2CC0 - 0x2DFF 11456 - 11775 320 整数
 									  //unsigned char unknown13[172]; 
 									  // 0x2E00 - 0x2EAB; 11776 - 11947 分解为三种数据
