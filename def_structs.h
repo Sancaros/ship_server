@@ -1,4 +1,4 @@
-#define NO_ALIGN __declspec(align(4))
+#define NO_ALIGN __declspec(align(1))
 
 typedef struct NO_ALIGN st_ptdata {
 	//typedef struct st_ptdata
@@ -188,7 +188,7 @@ typedef struct NO_ALIGN st_challenge_data {
 } CHALLENGEDATA;
 
 typedef struct NO_ALIGN st_battle_data {
-	unsigned char battleData[88];
+	unsigned char battleData[92];
 } BATTLEDATA;
 
 
@@ -206,7 +206,6 @@ typedef struct NO_ALIGN st_inventory_item {
 /* Game Inventory Item Structure 游戏背包物品结构*/
 
 typedef struct NO_ALIGN st_game_item {
-	//typedef struct NO_ALIGN st_game_item {
 	//typedef struct st_game_item {
 	unsigned gm_flag; // reserved
 	ITEM item;
@@ -271,8 +270,9 @@ typedef struct NO_ALIGN st_chardata {
 	unsigned char name3[16]; // 0x4E4 - 0x4F3; 1252 - 1267 16整数 名称3
 	unsigned char options[4]; // 0x4F4-0x4F7; 1268 - 1271 4 整数 //构建选项？
 							  // Stored from ED 01 packet.
-	unsigned char quest_data1[520]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
-									// 银行仓库相关
+	unsigned reserved4; // not sure
+	unsigned char quest_data1[512]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
+	unsigned reserved5;
 
 	unsigned bankUse; // 0x700 - 0x703 1792 - 1795 4 整数
 	unsigned bankMeseta; // 0x704 - 0x707; 1796 - 1799 4 整数
@@ -301,10 +301,10 @@ typedef struct NO_ALIGN st_chardata {
 									  //unsigned char unknown13[172]; 
 									  // 0x2E00 - 0x2EAB; 11776 - 11947 分解为三种数据
 	unsigned char techConfig[40]; // 0x2E00 - 0x2E27 11776 - 11815 40 整数 魔法设置
-	//unsigned char unknown13[40]; // 0x2E28-0x2E4F 11816 - 11855 40 整数 未知
-	//unsigned char battleData[92]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
-	unsigned char unknown13[44]; // 0x2E28-0x2E53 11816 - 11859
-	unsigned char battleData[88];// 0x2E54 - 0x2EAB (Quest data 2 任务数据2) 11860 - 11947
+	unsigned char unknown13[40]; // 0x2E28-0x2E4F 11816 - 11855 40 整数 未知
+	unsigned char battleData[92]; // 0x2E50 - 0x2EAB (Quest data 2 任务数据2) 11856 - 11947
+	//unsigned char unknown13[44]; // 0x2E28-0x2E53 11816 - 11859
+	//unsigned char battleData[88];// 0x2E54 - 0x2EAB (Quest data 2 任务数据2) 11860 - 11947
 								  // I don't know what this is, but split from unknown13 because this chunk is
 								  // actually copied into the 0xE2 packet during login @ 0x08 
 								  //我不知道这是什么，但是从unknown13开始拆分，因为这个块实际上是在登录期间复制到0xE2包中的 
@@ -452,14 +452,14 @@ struct rc4_key {
 typedef struct st_orange {
 	int sockfd;
 	struct in_addr _ip;
-	unsigned char rcvbuf [TCP_BUFFER_SIZE];
+	unsigned char rcvbuf[TCP_BUFFER_SIZE];
 	unsigned long rcvread;
 	unsigned long expect;
-	unsigned char decryptbuf [TCP_BUFFER_SIZE];
-	unsigned char sndbuf [PACKET_BUFFER_SIZE];
-	unsigned char encryptbuf [TCP_BUFFER_SIZE];
+	unsigned char decryptbuf[TCP_BUFFER_SIZE];
+	unsigned char sndbuf[PACKET_BUFFER_SIZE];
+	unsigned char encryptbuf[TCP_BUFFER_SIZE];
 	int snddata, sndwritten;
-	unsigned char packet [PACKET_BUFFER_SIZE];
+	unsigned char packet[PACKET_BUFFER_SIZE];
 	unsigned long packetdata;
 	unsigned long packetread;
 	int crypt_on;
