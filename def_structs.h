@@ -1,4 +1,4 @@
-#define NO_ALIGN __declspec(align(1))
+#define NO_ALIGN __declspec(align(4))
 
 typedef struct NO_ALIGN st_ptdata {
 	//typedef struct st_ptdata
