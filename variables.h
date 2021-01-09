@@ -12,24 +12,24 @@ unsigned global_rare_mult = 1;
 unsigned 	rare_box_mult;
 unsigned	rare_mob_drop_mult;
 unsigned 	WEAPON_DROP_RATE,
-			ARMOR_DROP_RATE,
-			MAG_DROP_RATE,
-			TOOL_DROP_RATE,
-			MESETA_DROP_RATE,
-			EXPERIENCE_RATE;
+ARMOR_DROP_RATE,
+MAG_DROP_RATE,
+TOOL_DROP_RATE,
+MESETA_DROP_RATE,
+EXPERIENCE_RATE;
 unsigned common_rates[5] = { 0 };
 
 // Rare monster appearance rates
 
 unsigned	rare_mob_mult;
-unsigned	hildebear_rate, 
-			rappy_rate,
-			lily_rate,
-			slime_rate,
-			merissa_rate,
-			pazuzu_rate,
-			dorphon_rate,
-			kondrieu_rate = 0;
+unsigned	hildebear_rate,
+rappy_rate,
+lily_rate,
+slime_rate,
+merissa_rate,
+pazuzu_rate,
+dorphon_rate,
+kondrieu_rate = 0;
 
 unsigned common_counters[5] = { 0 };
 
@@ -71,8 +71,11 @@ unsigned num_bans = 0;
 
 PTDATA pt_tables_ep1[10][4];
 PTDATA pt_tables_ep2[10][4];
+PTDATA pt_tables_ep4[10][4];
+PTDATA pt_tables_ep1c[10][4];
+PTDATA pt_tables_ep2c[10][4];
 
-// Episode I parsed PT data 章节 1 数据解析
+//章节 1 ItemPT数据解析
 
 unsigned short weapon_drops_ep1[10][4][10][4096];
 unsigned char slots_ep1[10][4][4096];
@@ -82,7 +85,7 @@ unsigned char power_patterns_ep1[10][4][4][4096];
 char percent_patterns_ep1[10][4][6][4096];
 unsigned char attachment_ep1[10][4][10][4096];
 
-// Episode II parsed PT data 章节 2 数据解析
+//章节 2 ItemPT数据解析
 
 unsigned short weapon_drops_ep2[10][4][10][4096];
 unsigned char slots_ep2[10][4][4096];
@@ -92,8 +95,37 @@ unsigned char power_patterns_ep2[10][4][4][4096];
 char percent_patterns_ep2[10][4][6][4096];
 unsigned char attachment_ep2[10][4][10][4096];
 
+//章节 4 ItemPT数据解析
 
-/* Rare tables 稀有类型数据表*/
+unsigned short weapon_drops_ep4[10][4][10][4096];
+unsigned char slots_ep4[10][4][4096];
+unsigned char tech_drops_ep4[10][4][10][4096];
+unsigned char tool_drops_ep4[10][4][10][4096];
+unsigned char power_patterns_ep4[10][4][4][4096];
+char percent_patterns_ep4[10][4][6][4096];
+unsigned char attachment_ep4[10][4][10][4096];
+
+//章节 1 挑战 ItemPT数据解析
+
+unsigned short weapon_drops_ep1c[10][4][10][4096];
+unsigned char slots_ep1c[10][4][4096];
+unsigned char tech_drops_ep1c[10][4][10][4096];
+unsigned char tool_drops_ep1c[10][4][10][4096];
+unsigned char power_patterns_ep1c[10][4][4][4096];
+char percent_patterns_ep1c[10][4][6][4096];
+unsigned char attachment_ep1c[10][4][10][4096];
+
+//章节 2 挑战 ItemPT数据解析
+
+unsigned short weapon_drops_ep2c[10][4][10][4096];
+unsigned char slots_ep2c[10][4][4096];
+unsigned char tech_drops_ep2c[10][4][10][4096];
+unsigned char tool_drops_ep2c[10][4][10][4096];
+unsigned char power_patterns_ep2c[10][4][4][4096];
+char percent_patterns_ep2c[10][4][6][4096];
+unsigned char attachment_ep2c[10][4][10][4096];
+
+/* Rare tables 稀有类型数据表 这个来自于登陆服务器*/
 
 unsigned rt_tables_ep1[0x200 * 10 * 4] = { 0 };
 unsigned rt_tables_ep2[0x200 * 10 * 4] = { 0 };
@@ -114,7 +146,7 @@ char Ship_Name[255]; //舰船名称没完成
 					 //wchar_t Ship_Name[255]; //舰船名称没完成
 SHIPLIST shipdata[200];
 BLOCK* blocks[10];
-QUEST quests[512];
+QUEST quests[520];
 QUEST_MENU quest_menus[12];
 unsigned* quest_allow = 0; // the "allow" list for the 0x60CA command...
 unsigned quest_numallows;
@@ -155,6 +187,9 @@ unsigned char special_table[256][256] = { 0 };
 unsigned char stackable_table[256] = { 0 };
 unsigned equip_prices[2][13][24][80] = { 0 };
 char max_tech_level[19][12];
+//属性テーブル用変数
+unsigned char armor_eic_table[256] = { 0 };
+unsigned char barrier_eic_table[256] = { 0 };
 
 PSO_CRYPT* cipher_ptr;
 

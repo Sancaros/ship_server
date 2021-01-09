@@ -4,10 +4,10 @@ typedef struct NO_ALIGN st_ptdata {
 	//typedef struct st_ptdata
 	unsigned char weapon_ratio[12]; // high = 0x0D
 	char weapon_minrank[12];
-	unsigned char weapon_reserved[12]; // ??
+	unsigned char weapon_maxfloor[12]; // 这里原来是问号,需要修改代码加载
 	unsigned char power_pattern[9][4];
 	unsigned short percent_pattern[23][6];
-	unsigned char area_pattern[30];
+	unsigned char area_pattern[30];//这里[30]改为了[3][10]
 	unsigned char percent_attachment[6][10];
 	unsigned char element_ranking[10];
 	unsigned char element_probability[10];
@@ -21,8 +21,45 @@ typedef struct NO_ALIGN st_ptdata {
 	unsigned short enemy_meseta[100][2];
 	char enemy_drop[100];
 	unsigned short box_meseta[10][2];
+	//unsigned char box_drop[10][7];
+	//unsigned short padding;
+	//unsigned long pointers[18];
+	//unsigned long armor_level; /* 0x0958 */
 	unsigned char reserved[0x1000 - 0x8C8];
 } PTDATA;
+/*
+https://github.com/isage/sylverant-ship_server/commit/62be1929a84fd814cffd8dc398037aeb97638f35
+TPtStruct = Record
+WeapRatio : array[0 .. 11] of ShortInt; // $0 Basic Weapon Appearence %'s
+WeapType: array[0 .. 11] of ShortInt; // $C Basic Weapon Starting Classes
+weapFloor: array[0 .. 11] of ShortInt; // $18 Basic Weapon Max Floor
+GrindPattern: array[0 .. 8, 0 .. 3] of ShortInt; // $24 Grind Patterns
+AttributePattern: array[0 .. 22, 0 .. 5] of word; // $48 Attribute Pattern
+RandomPattern: array[0 .. 2, 0 .. 9] of ShortInt; // $15C Random Pattern
+Percent: array[0 .. 9, 0 .. 5] of ShortInt; // $17A percent Chance
+Special: array[0 .. 9] of ShortInt; // $1B6 Special max star value
+SpecialPercent: array[0 .. 9] of ShortInt; // $1C0 Special apparence %
+ArmorRank: array[0 .. 4] of ShortInt; // $1CA Armor Shield Ranks
+Slot: array[0 .. 4] of ShortInt; // $1CF Slot appearnece %'s
+UnitMax: array[0 .. 9] of ShortInt; // $1D4 Unit Max per floor
+Tooldrop: array[0 .. 27, 0 .. 9] of word; // $1DE Tool Drop data
+Techdrop: array[0 .. 18, 0 .. 9] of byte; // $40E Tech drop data
+Techrange: array[0 .. 18, 0 .. 19] of ShortInt; // $4CC Tech data
+Dar: array[0 .. 99] of ShortInt; // $648 Enemy DAR
+EnemyMeseta: array[0 .. 99, 0 .. 1] of word; // $6AC Enemy Meseta Drops
+EnemyDropType: array[0 .. 99] of ShortInt; // $83C Enemy Type Drops
+BoxMeseta: array[0 .. 9, 0 .. 1] of word; // $8A0 Meseta Box Drops
+BoxDrop: array[0 .. 9, 0 .. 8] of byte; // $8C8 Box Drop Data
+Space: word; // $90E
+Pointers: array[0 .. 17] of Dword; // $910
+ArmorSet: longint; // $958 Base armor Level
+EndofFile: array[0 .. 33] of Dword; // $95C
+End;
+Entry in one of the ItemPT files. Mostly adapted from Tethealla... In the
+   file itself, each of these fields is stored in big-endian byter order.
+   Some of this data also comes from a post by Lee on the PSOBB Eden forums:
+   http://edenserv.net/forum/viewtopic.php?p=19305#p19305
+*/
 
 /* Ban Structure 封禁结构 */
 
@@ -270,9 +307,9 @@ typedef struct NO_ALIGN st_chardata {
 	unsigned char name3[16]; // 0x4E4 - 0x4F3; 1252 - 1267 16整数 名称3
 	unsigned char options[4]; // 0x4F4-0x4F7; 1268 - 1271 4 整数 //构建选项？
 							  // Stored from ED 01 packet.
-	unsigned reserved4; // not sure
-	unsigned char quest_data1[512]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
-	unsigned reserved5;
+	//unsigned reserved4; // not sure
+	unsigned char quest_data1[520]; // 0x4F8 - 0x6FF; 1272 - 1791 512 整数 任务 1 数据
+	//unsigned reserved5;
 
 	unsigned bankUse; // 0x700 - 0x703 1792 - 1795 4 整数
 	unsigned bankMeseta; // 0x704 - 0x707; 1796 - 1799 4 整数
@@ -392,6 +429,7 @@ typedef struct st_banana {
 	unsigned command_cooldown[256];
 	unsigned team_cooldown[32];
 	int bankType;
+	int shoptype;
 	int bankAccess;
 	BANK common_bank;
 	BANK char_bank;
